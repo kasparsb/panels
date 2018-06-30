@@ -1,0 +1,133 @@
+.modal-panel {
+    /** Vienmēr taisām, lai pārklāj visu ekrānu
+     * Sākuma statijā ir overflow hidden, lai &__w varētu
+     * nopoziconēt ārpus ekrāna un tad ar animāciju iebīdīt ekrānā
+     */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    
+    
+    z-index: @modalPanelZIndex;
+    overflow: hidden;
+    display: none;
+
+    /** Pirmā stadija, kad panelis ir redzams un pārklāj visu ekrānu */
+    &--visible {
+        display: block;
+    }
+
+    /** &__w animācija ir beigusies, liekam lai overflow ir scrolējam */
+    &--ready {
+        overflow: visible;
+        position: absolute;
+    }
+
+    /** Gadījums, kad otrs panelis nāk pa virsu un vajag, lai body scrollbars pazūd */
+    &--disabled {
+        overflow: hidden;
+        position: fixed;
+    }
+
+    /** Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu */
+    &__bg {
+        content: '';
+        display: block;
+
+        /** Fixed: iOS gadījumā, lai stāv */
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        background-color: @modalPanelContentBackgroundColor;
+
+        z-index: 10;
+    }
+    &--right &__bg {
+        right: 0;
+    }
+    &--left &__bg {
+        left: 0;
+    }
+
+    /** Šis tiks animēts */
+    &__w {
+        background: #fff;
+        min-height: 100%;
+    }
+    &--left &__w {
+        float: left;
+    }
+    &--right &__w {
+        float: right;
+    }
+
+    &__header {
+        /** Fixed: iOS gadījumā, lai stāv */
+        position: fixed;
+        top: 0;
+
+        height: @modalPanelHeaderHeight;
+
+        border-bottom: 1px solid @modalPanelZoningColor;
+
+        background: #fff;
+
+        z-index: 100;
+    }
+    &--right &__header {
+        right: 0;
+    }
+    &--left &__header {
+        left: 0;
+    }
+
+    &__close {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: block;
+        width: @modalPanelHeaderHeight;
+        height: @modalPanelHeaderHeight;
+        line-height: @modalPanelHeaderHeight;
+        text-align: center;
+        color: silver;
+        text-decoration: none;
+        cursor: pointer;
+
+        border-right: 1px solid @modalPanelZoningColor;
+
+        &:extend(.modal-panel-remove-tap-highlite);
+    }
+
+    &__heading {
+        position: absolute;
+        left: @modalPanelHeaderHeight;
+        top: 50%;
+        margin: -@modalPanelHeaderHeight/4 0 0;
+        padding: 0 @modalPanelSidePadding;
+        
+        height: @modalPanelHeaderHeight/2;
+        line-height: @modalPanelHeaderHeight/2;
+
+        text-align: center;
+        text-transform: uppercase;
+        font-size: 1rem;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 90;
+
+        /** Atbrīvojam vietu header */
+        padding-top: @modalPanelHeaderHeight + 1px;
+    }
+
+    &__footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+}

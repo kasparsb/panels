@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
+    <title>Basic</title>
+
+    <link rel="stylesheet" href="../build/panels.min.css" type="text/css" />
+    
+    <style>
+    html, body {
+        padding: 0;
+        margin: 0;
+    }
+    .r {
+        background: silver;
+        padding: 20px;
+        margin-bottom: 40px;
+    }
+    .controls {
+        position: fixed;
+        left: 10px;
+        right: 10px;
+        top: 10px;
+    }
+    button {
+        margin-top: 14px;
+        width: 120px;
+        display: block;
+    }
+    .el {
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        text-align: center;
+        background: green;
+        color: #fff;
+    }
+    .el-d {
+        background: red
+    }
+    </style>
+
+</head>
+<body>
+    <div class="modal-panel modal-panel--right">
+        <div class="modal-panel__w">
+            
+            <div class="modal-panel__bg"></div>
+
+            <header class="modal-panel__header">
+                <a href="" class="modal-panel__close">&times;</a>
+                <h4 class="modal-panel__heading">Heading</h4>
+            </header>
+
+            <section class="modal-panel__content">
+                content
+            </section>
+        </div>
+    </div>
+
+    <div class="app-w">
+        <div class="app">
+            
+
+            <div class="controls">
+                <button type="button" name="open-panel">Open panel</button>
+            </div>
+
+            <div class="r">1</div>
+            <div class="r">2</div>
+            <div class="r">3</div>
+            <div class="r">4</div>
+            <div class="r">5</div>
+            <div class="r">6</div>
+            <div class="r">7</div>
+            <div class="r">8</div>
+            <div class="r">9</div>
+            <div class="r">10</div>
+            <div class="r">11</div>
+            <div class="r">12</div>
+            <div class="r">13</div>
+            <div class="r">14</div>
+
+        </div>
+    </div>
+
+    <script src="../build/panels.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        
+    <script>
+        (function($){
+            
+            webit.panels.register('basic', $('.modal-panel'), {
+                width: 200
+                // width: function(){
+                //     return 500
+                // }
+            })
+
+            $(document).on('click', '[name=open-panel]', function(ev){
+                ev.preventDefault();
+                
+                webit.panels.show('basic');
+            })
+
+        })(jQuery)
+    </script>
+</body>
+</html>

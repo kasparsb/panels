@@ -1,0 +1,18 @@
+@import 'variables';
+@import 'overlay';
+@import 'modal-panel';
+
+.app-w {
+    &--disabled {
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 0;
+        /** Jāliek lielāks, jo uz Android bīdot uz augšu, kad prom iet 
+         * browsera menu tad, fixed panelis iet līdzi un tajā mirklī paliek
+         * vairāk vietas ekrāna augstumā un overlay izskatas, ka sašaurinās
+         */
+        height: 100%;
+        overflow: hidden;
+    }
+}

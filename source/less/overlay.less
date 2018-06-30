@@ -1,0 +1,25 @@
+.overlay {
+    position: fixed;
+
+    left: 0;
+    right: 0;
+    top: 0;
+    /** Jāliek lielāks, jo uz Android bīdot uz augšu, kad prom iet 
+     * browsera menu tad, fixed panelis iet līdzi un tajā mirklī paliek
+     * vairāk vietas ekrāna augstumā un overlay izskatas, ka sašaurinās
+     */
+    height: 120%;
+
+    background: rgba(0,0,0,0.5);
+
+    display: none;
+    opacity: 0;
+
+    z-index: @overlayZIndex;
+
+
+    &--visible-step1 {
+        display: block;
+        opacity: 0;
+    }
+}
