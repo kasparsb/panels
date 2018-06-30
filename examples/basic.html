@@ -28,22 +28,11 @@
         width: 120px;
         display: block;
     }
-    .el {
-        width: 40px;
-        height: 40px;
-        line-height: 40px;
-        text-align: center;
-        background: green;
-        color: #fff;
-    }
-    .el-d {
-        background: red
-    }
     </style>
 
 </head>
 <body>
-    <div class="modal-panel modal-panel--right">
+    <div class="modal-panel panel1">
         <div class="modal-panel__w">
             
             <div class="modal-panel__bg"></div>
@@ -54,17 +43,35 @@
             </header>
 
             <section class="modal-panel__content">
-                content
+                panel 1
             </section>
         </div>
     </div>
+
+    <div class="modal-panel panel2">
+        <div class="modal-panel__w">
+            
+            <div class="modal-panel__bg"></div>
+
+            <header class="modal-panel__header">
+                <a href="" class="modal-panel__close">&times;</a>
+                <h4 class="modal-panel__heading">Heading</h4>
+            </header>
+
+            <section class="modal-panel__content">
+                panel 2
+            </section>
+        </div>
+    </div>
+
 
     <div class="app-w">
         <div class="app">
             
 
             <div class="controls">
-                <button type="button" name="open-panel">Open panel</button>
+                <button type="button" name="open-panel1">Open panel 1</button>
+                <button type="button" name="open-panel2">Open panel 2</button>
             </div>
 
             <div class="r">1</div>
@@ -92,17 +99,30 @@
     <script>
         (function($){
             
-            webit.panels.register('basic', $('.modal-panel'), {
-                width: 200
-                // width: function(){
-                //     return 500
-                // }
+            webit.panels.register('basic1', $('.panel1'), {
+                align: 'right',
+                width: function(){
+                    return 300
+                }
             })
 
-            $(document).on('click', '[name=open-panel]', function(ev){
+            webit.panels.register('basic2', $('.panel2'), {
+                align: 'left',
+                width: function(){
+                    return 200
+                }
+            })
+
+            $(document).on('click', '[name=open-panel1]', function(ev){
                 ev.preventDefault();
                 
-                webit.panels.show('basic');
+                webit.panels.show('basic1');
+            })
+
+            $(document).on('click', '[name=open-panel2]', function(ev){
+                ev.preventDefault();
+                
+                webit.panels.show('basic2');
             })
 
         })(jQuery)
