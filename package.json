@@ -2,7 +2,7 @@
   "name": "panels",
   "version": "0.0.1",
   "private": true,
-  "main": "manager.js",
+  "main": "source/js/app.js",
   "devDependencies": {
     "gulp": "^3.8.8",
     "gulp-rename": "^1.2.2",
