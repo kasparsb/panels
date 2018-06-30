@@ -1,3 +1,5 @@
+var addCssClass = require('./addCssClass');
+
 function panel(name, $el, props) {
 
     this.closeCb = undefined;
@@ -6,7 +8,7 @@ function panel(name, $el, props) {
     this.name = name;
     this.props = props;
 
-    this.$el = $el;
+    this.$el = this.prepareEl($el);
     this.$w = this.$el.find('.modal-panel__w');
     this.$bg = this.$el.find('.modal-panel__bg');
     this.$header = this.$el.find('.modal-panel__header');
@@ -33,8 +35,24 @@ panel.prototype = {
         })
     },
 
+    prepareEl: function($el) {
+
+        // Default align: right
+        addCssClass($el.get(0), 'modal-panel--'+this.getAlign())
+
+        return $el;
+    },
+
+    getProp: function(name, defaultValue) {
+        if (typeof this.props[name] == 'undefined') {
+            return defaultValue
+        }
+
+        return this.props[name]
+    },
+
     getWidth: function() {
-        switch (typeof this.props.width == 'undefined') {
+        switch (typeof this.props.width) {
             case 'undefined':
                 return 320;
             case 'function':
@@ -43,9 +61,21 @@ panel.prototype = {
                 return this.props.width;
         }
     },
+
+    getAlign: function() {
+        return this.getProp('align', 'right');
+    },
     
     applyProgress: function(p) {
-        this.setXoffset(this.menuWidth - this.menuWidth*p);
+
+        switch (this.getAlign()) {
+            case 'right':
+                this.setXoffset(this.menuWidth - this.menuWidth*p);
+                break;
+            case 'left':
+                this.setXoffset(-(this.menuWidth - this.menuWidth*p));
+                break;
+        }        
     },
 
     setXoffset: function(x) {
@@ -62,7 +92,7 @@ panel.prototype = {
         this.menuWidth = this.getWidth();
 
         this.setWidth(this.menuWidth);
-        this.setXoffset(this.menuWidth);
+        this.applyProgress(0);
         
         this.$el.addClass('modal-panel--visible');
 
