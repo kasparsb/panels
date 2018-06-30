@@ -14,6 +14,9 @@ function panel(name, $el, props) {
     this.$header = this.$el.find('.modal-panel__header');
 
     this.setEvents();
+
+    // Overraidojama applyProgress metode
+    this._applyProgress = this.getProp('applyProgress', this.defaultApplyProgress)
 }
 
 panel.prototype = {
@@ -51,10 +54,14 @@ panel.prototype = {
         return this.props[name]
     },
 
+    /**
+     * Get width ir konfigurējams no props
+     */
     getWidth: function() {
-        switch (typeof this.props.width) {
-            case 'undefined':
-                return 320;
+        var width = this.getProp('width', 320);
+
+        switch (typeof width) {
+            // Width var nodefinēt kā funkciju
             case 'function':
                 return this.props.width();
             default:
@@ -66,16 +73,32 @@ panel.prototype = {
         return this.getProp('align', 'right');
     },
     
-    applyProgress: function(p) {
+    /**
+     * applyProgress ir iespēja overraidot. 
+     * Šī ir default applyProgress funkcionalitāte
+     * @param object Panel instance. Šajā gadījumā tas ir this
+     * bet, lai būtu vieglāk saprast kā overraidot, tad šeit
+     * tiek padots panel, tā pat kā custom applyProgress gadījumā
+     * @param number Progress: 0 - sākuma stāvoklis (aizvērts), 1 - pilnībā atvērts
+     */
+    defaultApplyProgress: function(panel, progress) {
 
-        switch (this.getAlign()) {
+        switch (panel.getAlign()) {
             case 'right':
-                this.setXoffset(this.menuWidth - this.menuWidth*p);
+                panel.setXoffset(panel.menuWidth - panel.menuWidth * progress);
                 break;
             case 'left':
-                this.setXoffset(-(this.menuWidth - this.menuWidth*p));
+                panel.setXoffset(-(panel.menuWidth - panel.menuWidth * progress));
                 break;
         }        
+    },
+
+    /**
+     * Interfeiss priekš īstās applyProgress metodes
+     * _applyProgress tiek nodefinēts konstruktorā
+     */
+    applyProgress: function(progress) {
+        this._applyProgress(this, progress)
     },
 
     setXoffset: function(x) {
