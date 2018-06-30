@@ -110,6 +110,10 @@
                 align: 'left',
                 width: function(){
                     return 200
+                },
+                applyProgress: function(panel, progress) {
+                    panel.$w.css('opacity', progress);
+                    panel.defaultApplyProgress(panel, progress)
                 }
             })
 
