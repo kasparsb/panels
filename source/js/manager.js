@@ -3,7 +3,9 @@ var BodyScroll = require('./bodyScrollDisable');
 var Overlay = require('./overlay');
 var Panel = require('./panel');
 
-var panels = {}, Step, OverlayStep, needToShowOverlay = true, needToHideOverlay = true, openPanelsCount = 0, openPanelsStack = [];
+var Step, OverlayStep, panels = {}, 
+    needToShowOverlay = true, needToHideOverlay = true, 
+    openPanelsCount = 0, openPanelsStack = [];
 
 function init() {
     Step = new Stepper();
@@ -109,7 +111,6 @@ function showPanel(panel, withoutAnimation, animDurations) {
 
     panelBeforeShow(panel);
 
-
     if (needToShowOverlay) {
 
         if (withoutAnimation) {
@@ -135,7 +136,7 @@ function showPanel(panel, withoutAnimation, animDurations) {
         //setTimeout(function(){
             Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955],
                 function(p){
-                    panel.applyProgress(p)
+                    //panel.applyProgress(p)
                 }, 
                 function(){
                     if (panel.showPanelDone) {

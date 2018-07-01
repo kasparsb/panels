@@ -1,4 +1,6 @@
 var addCssClass = require('./addCssClass');
+var removeCssClass = require('./removeCssClass');
+var addStyle = require('./addStyle');
 
 function panel(name, $el, props) {
 
@@ -8,10 +10,10 @@ function panel(name, $el, props) {
     this.name = name;
     this.props = props;
 
-    this.$el = this.prepareEl($el);
-    this.$w = this.$el.find('.modal-panel__w');
-    this.$bg = this.$el.find('.modal-panel__bg');
-    this.$header = this.$el.find('.modal-panel__header');
+    this.el = this.prepareEl($el.get(0));
+    this.w = $el.find('.modal-panel__w').get(0);
+    this.bg = $el.find('.modal-panel__bg').get(0);
+    this.header = $el.find('.modal-panel__header').get(0);
 
     this.setEvents();
 
@@ -28,7 +30,7 @@ panel.prototype = {
          * closeCb nāk no panelsManager, kura šādā 
          * veidā pateiksim, ka ir jāaizveras
          */
-        this.$el.on('click', '.modal-panel__close', function(ev){
+        $(this.el).on('click', '.modal-panel__close', function(ev){
             ev.preventDefault();
 
             
@@ -38,12 +40,12 @@ panel.prototype = {
         })
     },
 
-    prepareEl: function($el) {
+    prepareEl: function(el) {
 
         // Default align: right
-        addCssClass($el.get(0), 'modal-panel--'+this.getAlign())
+        addCssClass(el, 'modal-panel--'+this.getAlign())
 
-        return $el;
+        return el;
     },
 
     getProp: function(name, defaultValue) {
@@ -102,22 +104,34 @@ panel.prototype = {
     },
 
     setXoffset: function(x) {
-        this.$w.css('transform', 'translate3d('+x+'px,0,0)')
+        addStyle(this.w, {
+            transform: 'translate3d('+x+'px,0,0)'
+        })
     },
 
     setWidth: function(width) {
-        this.$w.css('width', width+'px');
-        this.$bg.css('width', width+'px');
-        this.$header.css('width', width+'px');
+        addStyle(this.w, {
+            width: width+'px'
+        });
+        addStyle(this.bg, {
+            width: width+'px'
+        });
+        addStyle(this.header, {
+            width: width+'px'
+        });
     },
 
     beforeShow: function() {
         this.menuWidth = this.getWidth();
 
         this.setWidth(this.menuWidth);
-        this.applyProgress(0);
         
-        this.$el.addClass('modal-panel--visible');
+
+        //this.applyProgress(0);
+
+
+        
+        addCssClass(this.el, 'modal-panel--visible');
 
         if (this.beforeShowCb) {
             this.beforeShowCb();
@@ -125,24 +139,35 @@ panel.prototype = {
     },
 
     showPanelDone: function() {
-        this.$el.addClass('modal-panel--ready');
-        this.$w.css('transform', '')
+        addCssClass(this.el, 'modal-panel--ready');
+        
+
+        var mthis = this;
+        setTimeout(function(){
+            mthis.setXoffset(1)
+        }, 2000)
+
+        // addStyle(this.w, {
+        //     transform: ''
+        // })
+
+
     },
 
     beforeHide: function() {
-        this.$el.removeClass('modal-panel--ready');
+        removeCssClass(this.el, 'modal-panel--ready');
     },
 
     afterHide: function() {
-        this.$el.removeClass('modal-panel--visible');
+        removeCssClass(this.el, 'modal-panel--visible');
     },
 
     disable: function() {
-        this.$el.addClass('modal-panel--disabled');
+        addCssClass(this.el, 'modal-panel--disabled');
     },
 
     enable: function() {
-        this.$el.removeClass('modal-panel--disabled');
+        removeCssClass(this.el, 'modal-panel--disabled');
     },
 
     onClose: function(cb) {

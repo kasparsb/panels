@@ -2,6 +2,7 @@ var getWindowScrollTop = require('./getWindowScrollTop');
 var setWindowScrollTop = require('./setWindowScrollTop');
 var addCssClass = require('./addCssClass');
 var removeCssClass = require('./removeCssClass');
+var addStyle = require('./addStyle');
 
 var app, appContainer, scrollTop;
 
@@ -20,12 +21,16 @@ function disable() {
     scrollTop = getWindowScrollTop();
 
     addCssClass(appContainer, 'app-w--disabled');
-    app.style.transform = 'translate(0,-'+scrollTop+'px)';
+    addStyle(app, {
+        transform: 'translate(0,-'+scrollTop+'px)'
+    })
 }
 
 function enable() {
     removeCssClass(appContainer, 'app-w--disabled');
-    app.style.transform = '';
+    addStyle(app, {
+        transform: ''
+    })
 
     // Atjaunojam scroll top
     setWindowScrollTop(scrollTop);

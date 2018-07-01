@@ -22,11 +22,22 @@
         left: 10px;
         right: 10px;
         top: 10px;
+
+        z-index: 1
     }
     button {
         margin-top: 14px;
-        width: 120px;
+        width: 140px;
         display: block;
+        background: none;
+        border: none;
+        background-color: #28c128;
+        padding: 12px 20px;
+        color: #000;
+        border-radius: 4px;
+        font-weight: bold;
+        
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
     }
     </style>
 
@@ -64,16 +75,13 @@
         </div>
     </div>
 
+    <div class="controls">
+        <button type="button" name="open-panel1">Open panel 1</button>
+        <button type="button" name="open-panel2">Open panel 2</button>
+    </div>
 
     <div class="app-w">
         <div class="app">
-            
-
-            <div class="controls">
-                <button type="button" name="open-panel1">Open panel 1</button>
-                <button type="button" name="open-panel2">Open panel 2</button>
-            </div>
-
             <div class="r">1</div>
             <div class="r">2</div>
             <div class="r">3</div>
@@ -88,7 +96,6 @@
             <div class="r">12</div>
             <div class="r">13</div>
             <div class="r">14</div>
-
         </div>
     </div>
 
@@ -102,7 +109,7 @@
             webit.panels.register('basic1', $('.panel1'), {
                 align: 'right',
                 width: function(){
-                    return 300
+                    return 180
                 }
             })
 
@@ -112,7 +119,7 @@
                     return 200
                 },
                 applyProgress: function(panel, progress) {
-                    panel.$w.css('opacity', progress);
+                    $(panel.w).css('opacity', progress);
                     panel.defaultApplyProgress(panel, progress)
                 }
             })
