@@ -89,6 +89,7 @@ function panelAfterHide(panel) {
 }
 
 function showPanel(panel, withoutAnimation, animDurations) {
+
     if (typeof panel != 'object') {
         panel = getPanel(panel);
     }
@@ -133,10 +134,10 @@ function showPanel(panel, withoutAnimation, animDurations) {
         }
     }
     else {
-        //setTimeout(function(){
+        setTimeout(function(){
             Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955],
                 function(p){
-                    //panel.applyProgress(p)
+                    panel.applyProgress(p)
                 }, 
                 function(){
                     if (panel.showPanelDone) {
@@ -144,7 +145,7 @@ function showPanel(panel, withoutAnimation, animDurations) {
                     }
                 }
             )
-        //}, 140)
+        }, 140)
     }
     
 }

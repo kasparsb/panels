@@ -11,9 +11,16 @@ function panel(name, $el, props) {
     this.props = props;
 
     this.el = this.prepareEl($el.get(0));
-    this.w = $el.find('.modal-panel__w').get(0);
-    this.bg = $el.find('.modal-panel__bg').get(0);
-    this.header = $el.find('.modal-panel__header').get(0);
+
+    /**
+     * Animējamie elementi
+     */
+    this.animableElements = {
+        'bg': $el.find('.modal-panel__bg').get(0),
+        'header': $el.find('.modal-panel__header').get(0),
+        'footer': $el.find('.modal-panel__footer').get(0),
+        'content': $el.find('.modal-panel__content').get(0)
+    }
 
     this.setEvents();
 
@@ -56,6 +63,10 @@ panel.prototype = {
         return this.props[name]
     },
 
+    getAlign: function() {
+        return this.getProp('align', 'right');
+    },
+
     /**
      * Get width ir konfigurējams no props
      */
@@ -71,10 +82,28 @@ panel.prototype = {
         }
     },
 
-    getAlign: function() {
-        return this.getProp('align', 'right');
+    setAnimableElementsStyle: function(cssProps) {
+        for (var n in this.animableElements) {
+            if (!this.animableElements.hasOwnProperty(n)) {
+                continue;
+            }
+            
+            if (!this.animableElements[n]) {
+                continue;
+            }
+            
+            addStyle(this.animableElements[n], cssProps);
+        }
     },
-    
+
+    /**
+     * Interfeiss priekš īstās applyProgress metodes
+     * _applyProgress tiek nodefinēts konstruktorā
+     */
+    applyProgress: function(progress) {
+        this._applyProgress(this, progress)
+    },
+
     /**
      * applyProgress ir iespēja overraidot. 
      * Šī ir default applyProgress funkcionalitāte
@@ -95,28 +124,14 @@ panel.prototype = {
         }        
     },
 
-    /**
-     * Interfeiss priekš īstās applyProgress metodes
-     * _applyProgress tiek nodefinēts konstruktorā
-     */
-    applyProgress: function(progress) {
-        this._applyProgress(this, progress)
-    },
-
     setXoffset: function(x) {
-        addStyle(this.w, {
+        this.setAnimableElementsStyle({
             transform: 'translate3d('+x+'px,0,0)'
         })
     },
 
     setWidth: function(width) {
-        addStyle(this.w, {
-            width: width+'px'
-        });
-        addStyle(this.bg, {
-            width: width+'px'
-        });
-        addStyle(this.header, {
+        this.setAnimableElementsStyle({
             width: width+'px'
         });
     },
@@ -125,12 +140,8 @@ panel.prototype = {
         this.menuWidth = this.getWidth();
 
         this.setWidth(this.menuWidth);
-        
+        this.applyProgress(0);
 
-        //this.applyProgress(0);
-
-
-        
         addCssClass(this.el, 'modal-panel--visible');
 
         if (this.beforeShowCb) {
@@ -140,18 +151,6 @@ panel.prototype = {
 
     showPanelDone: function() {
         addCssClass(this.el, 'modal-panel--ready');
-        
-
-        var mthis = this;
-        setTimeout(function(){
-            mthis.setXoffset(1)
-        }, 2000)
-
-        // addStyle(this.w, {
-        //     transform: ''
-        // })
-
-
     },
 
     beforeHide: function() {

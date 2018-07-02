@@ -8,11 +8,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    
-    
+        
     z-index: @modalPanelZIndex;
     overflow: hidden;
     display: none;
+
+    &:extend(.modal-panel-remove-tap-highlite);
 
     /** Pirmā stadija, kad panelis ir redzams un pārklāj visu ekrānu */
     &--visible {
@@ -31,7 +32,11 @@
         position: fixed;
     }
 
-    /** Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu */
+    /** 
+     * Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu 
+     * Šis ir fixed, lai uz ios taisot overscroll tas stāvētu uz vietas
+     * uz iOS 7 - iet līdzi un nestāv uz vietas
+     */
     &__bg {
         content: '';
         display: block;
@@ -43,27 +48,6 @@
         background-color: @modalPanelContentBackgroundColor;
 
         z-index: 10;
-    }
-    &--right &__bg {
-        right: 0;
-    }
-    &--left &__bg {
-        left: 0;
-    }
-
-    /** Šis tiks animēts */
-    &__w {
-        background: red;
-        min-height: 100%;
-
-        box-sizing: border-box;
-        border: 4px solid green;
-    }
-    &--left &__w {
-        float: left;
-    }
-    &--right &__w {
-        float: right;
     }
 
     &__header {
@@ -79,12 +63,35 @@
 
         z-index: 100;
     }
-    &--right &__header {
-        right: 0;
+    
+    &__content {
+        position: absolute;
+        z-index: 90;
+
+        /** Atbrīvojam vietu header */
+        top: @modalPanelHeaderHeight + 1px;
     }
-    &--left &__header {
+
+    &__footer {
+        position: absolute;
+        
+        bottom: 0;
+    }
+
+
+    &--left &__bg,
+    &--left &__header,
+    &--left &__footer,
+    &--left &__content {
         left: 0;
     }
+    &--right &__bg,
+    &--right &__header,
+    &--right &__footer,
+    &--right &__content {
+        right: 0;
+    }
+
 
     &__close {
         position: absolute;
@@ -100,8 +107,6 @@
         cursor: pointer;
 
         border-right: 1px solid @modalPanelZoningColor;
-
-        &:extend(.modal-panel-remove-tap-highlite);
     }
 
     &__heading {
@@ -117,20 +122,5 @@
         text-align: center;
         text-transform: uppercase;
         font-size: 1rem;
-    }
-
-    &__content {
-        position: relative;
-        z-index: 90;
-
-        /** Atbrīvojam vietu header */
-        padding-top: @modalPanelHeaderHeight + 1px;
-    }
-
-    &__footer {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
     }
 }
