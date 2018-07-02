@@ -13,6 +13,14 @@ function panel(name, $el, props) {
     this.el = this.prepareEl($el.get(0));
 
     /**
+     * Paneļa platums. Šis tiek ņemts no props.width
+     * Ar šo mainīgo width tiek iekešots un tiek ielasīts
+     * tikai vienu reizi beforeShow eventā
+     */
+    this.panelWidth = 0;
+    this.panelAlign = 'right'
+
+    /**
      * Animējamie elementi
      */
     this.animableElements = {
@@ -113,15 +121,24 @@ panel.prototype = {
      * @param number Progress: 0 - sākuma stāvoklis (aizvērts), 1 - pilnībā atvērts
      */
     defaultApplyProgress: function(panel, progress) {
+        panel.setXoffset(
+            this.calcXoffsetByProgress(
+                panel.panelAlign, 
+                panel.panelWidth, 
+                progress
+            )
+        );
+    },
 
-        switch (panel.getAlign()) {
-            case 'right':
-                panel.setXoffset(panel.menuWidth - panel.menuWidth * progress);
-                break;
+    calcXoffsetByProgress: function(align, width, progress) {
+        switch (align) {
             case 'left':
-                panel.setXoffset(-(panel.menuWidth - panel.menuWidth * progress));
+                return -(width - width * progress);
                 break;
-        }        
+            default:
+                return width - width * progress;
+                break;
+        }
     },
 
     setXoffset: function(x) {
@@ -137,12 +154,18 @@ panel.prototype = {
     },
 
     beforeShow: function() {
-        this.menuWidth = this.getWidth();
+        this.panelWidth = this.getWidth();
+        this.panelAlign = this.getAlign();
 
-        this.setWidth(this.menuWidth);
+        this.setWidth(this.panelWidth);
         this.applyProgress(0);
 
         addCssClass(this.el, 'modal-panel--visible');
+
+        /**
+         * iOS fix, ja neuzliek transform, tad skrollējot raustīsies fixed header
+         */
+        addStyle(this.el, {transform: 'translate3d(0,0,0)'});
 
         if (this.beforeShowCb) {
             this.beforeShowCb();
@@ -151,6 +174,24 @@ panel.prototype = {
 
     showPanelDone: function() {
         addCssClass(this.el, 'modal-panel--ready');
+
+        /**
+         * Jānovāc transform, lai uz iOS 12 
+         * scrollējot neraustītos fixed header
+         */
+        this.setAnimableElementsStyle({
+            transform: ''
+        })
+
+
+        /**
+         * iOS fix, ja neuzliek transform, tad skrollējot raustīsies fixed header
+         * Kad animācija beigusies, tad ņemam nost, lai nebojā fixed header palikšanu
+         * uz vietas, kad notiek scrollēšana
+         * Ja parent elementam ir uzlikts transform, tad child position:fixed elementi
+         * ir relatīvi pret parent nevis document
+         */
+        addStyle(this.el, {transform: ''});
     },
 
     beforeHide: function() {
