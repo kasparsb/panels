@@ -10,6 +10,7 @@ function panel(name, $el, props) {
     this.name = name;
     this.props = props;
 
+    this.$el = $el;
     this.el = this.prepareEl($el.get(0));
 
     /**
@@ -45,7 +46,7 @@ panel.prototype = {
          * closeCb nāk no panelsManager, kura šādā 
          * veidā pateiksim, ka ir jāaizveras
          */
-        $(this.el).on('click', '.modal-panel__close', function(ev){
+        this.$el.on('click', '.modal-panel__close', function(ev){
             ev.preventDefault();
 
             
