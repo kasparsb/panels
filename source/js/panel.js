@@ -1,6 +1,8 @@
 var addCssClass = require('./addCssClass');
 var removeCssClass = require('./removeCssClass');
 var addStyle = require('./addStyle');
+var getWindowDimensions = require('./getWindowDimensions');
+var calcPanelXYOffsetByProgress = require('./calcPanelXYOffsetByProgress');
 
 function panel(name, $el, props) {
 
@@ -19,7 +21,9 @@ function panel(name, $el, props) {
      * tikai vienu reizi beforeShow eventā
      */
     this.panelWidth = 0;
-    this.panelAlign = 'right'
+    this.panelAlign = 'right';
+    this.revealDirection = 'right';
+    this.windowDimensions = {};
 
     /**
      * Animējamie elementi
@@ -72,8 +76,18 @@ panel.prototype = {
         return this.props[name]
     },
 
+    /**
+     * Paneļa novietojums
+     */
     getAlign: function() {
         return this.getProp('align', 'right');
+    },
+
+    /**
+     * Virziens, no kura panelis tiek iebīdīts ekrānā
+     */
+    getRevealDirection: function() {
+        return this.getProp('revealDirection', this.getAlign());
     },
 
     /**
@@ -85,7 +99,7 @@ panel.prototype = {
         switch (typeof width) {
             // Width var nodefinēt kā funkciju
             case 'function':
-                return this.props.width();
+                return this.props.width(getWindowDimensions());
             default:
                 return this.props.width;
         }
@@ -122,29 +136,20 @@ panel.prototype = {
      * @param number Progress: 0 - sākuma stāvoklis (aizvērts), 1 - pilnībā atvērts
      */
     defaultApplyProgress: function(panel, progress) {
-        panel.setXoffset(
-            this.calcXoffsetByProgress(
+        panel.setXYOffset(
+            calcPanelXYOffsetByProgress(
                 panel.panelAlign, 
-                panel.panelWidth, 
+                panel.revealDirection,
+                panel.panelWidth,
+                panel.windowDimensions,
                 progress
             )
         );
     },
 
-    calcXoffsetByProgress: function(align, width, progress) {
-        switch (align) {
-            case 'left':
-                return -(width - width * progress);
-                break;
-            default:
-                return width - width * progress;
-                break;
-        }
-    },
-
-    setXoffset: function(x) {
+    setXYOffset: function(offset) {
         this.setAnimableElementsStyle({
-            transform: 'translate3d('+x+'px,0,0)'
+            transform: 'translate3d('+offset.x+'px,'+offset.y+'px,0)'
         })
     },
 
@@ -155,8 +160,11 @@ panel.prototype = {
     },
 
     beforeShow: function() {
+        this.windowDimensions = getWindowDimensions();
         this.panelWidth = this.getWidth();
         this.panelAlign = this.getAlign();
+        this.revealDirection = this.getRevealDirection();
+        
 
         this.setWidth(this.panelWidth);
         this.applyProgress(0);
