@@ -20,7 +20,10 @@ function panel(name, $el, props) {
      * Ar šo mainīgo width tiek iekešots un tiek ielasīts
      * tikai vienu reizi beforeShow eventā
      */
-    this.panelWidth = 0;
+    this.panelDimensions = {
+        width: 0,
+        height: 0
+    }
     this.panelAlign = 'right';
     this.revealDirection = 'right';
     this.windowDimensions = {};
@@ -93,15 +96,30 @@ panel.prototype = {
     /**
      * Get width ir konfigurējams no props
      */
-    getWidth: function() {
+    getWidth: function(viewportDimensions) {
         var width = this.getProp('width', 320);
 
         switch (typeof width) {
             // Width var nodefinēt kā funkciju
             case 'function':
-                return this.props.width(getWindowDimensions());
+                return width(viewportDimensions);
             default:
-                return this.props.width;
+                return width;
+        }
+    },
+
+    /**
+     * Get width ir konfigurējams no props
+     */
+    getHeight: function(viewportDimensions) {
+        var height = this.getProp('height', viewportDimensions.height);
+
+        switch (typeof height) {
+            // Width var nodefinēt kā funkciju
+            case 'function':
+                return height(viewportDimensions);
+            default:
+                return height;
         }
     },
 
@@ -140,7 +158,7 @@ panel.prototype = {
             calcPanelXYOffsetByProgress(
                 panel.panelAlign, 
                 panel.revealDirection,
-                panel.panelWidth,
+                panel.panelDimensions,
                 panel.windowDimensions,
                 progress
             )
@@ -159,14 +177,35 @@ panel.prototype = {
         });
     },
 
+    setHeight: function(height) {
+        addStyle(this.el, {height: height+'px'})
+
+        /**
+         * Special case, kad height ir tāds pats kā viewportHeight
+         * šajā gadījumā vajag lai background ir lielāks par viewport, 
+         * lai scrollējot uz mobile safari/chrome nebūtu raustišanās,
+         * kad parādās un pazūd bottom menu (kas izraisa ekrāna paaugstināšanos)
+         */
+        if (height >= this.windowDimensions.height) {
+            addStyle(this.animableElements.bg, {height: '120%'})
+        }
+        else {
+            addStyle(this.animableElements.bg, {height: height+'px'})
+        }
+    },
+
     beforeShow: function() {
         this.windowDimensions = getWindowDimensions();
-        this.panelWidth = this.getWidth();
+        this.panelDimensions = {
+            width: this.getWidth(this.windowDimensions),
+            height: this.getHeight(this.windowDimensions)
+        };
         this.panelAlign = this.getAlign();
         this.revealDirection = this.getRevealDirection();
         
 
-        this.setWidth(this.panelWidth);
+        this.setWidth(this.panelDimensions.width);
+        this.setHeight(this.panelDimensions.height);
         this.applyProgress(0);
 
         addCssClass(this.el, 'modal-panel--visible');

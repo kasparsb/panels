@@ -1,6 +1,6 @@
 .modal-panel {
     /** Vienmēr taisām, lai pārklāj visu ekrānu
-     * Sākuma statijā ir overflow hidden, lai &__w varētu
+     * Sākuma stadijā ir overflow hidden, lai &__w varētu
      * nopoziconēt ārpus ekrāna un tad ar animāciju iebīdīt ekrānā
      */
     position: fixed;
@@ -20,7 +20,7 @@
         display: block;
     }
 
-    /** &__w animācija ir beigusies, liekam lai overflow ir scrolējam */
+    /** Animācija ir beigusies, liekam lai overflow ir scrolējam */
     &--ready {
         overflow: visible;
         position: absolute;
@@ -44,11 +44,18 @@
         /** Fixed: iOS gadījumā, lai stāv */
         position: fixed;
         top: 0;
-        height: 120%;
+        /** 
+         * Height tiek definēts panel.js, jo height var būt custom 
+         * 120% vajag tikai, ja ir fullheight
+         */
+        /** height: 120%; */
 
         background-color: @modalPanelContentBackgroundColor;
 
         z-index: 10;
+    }
+    &--fullheight &__bg {
+
     }
 
     &__header {
@@ -69,8 +76,12 @@
         position: absolute;
         z-index: 90;
 
+        box-sizing: border-box;
+
+        top: 0;
+
         /** Atbrīvojam vietu header */
-        top: @modalPanelHeaderHeight + 1px;
+        padding-top: @modalPanelHeaderHeight + 1px;
     }
 
     &__footer {

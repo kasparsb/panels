@@ -1,6 +1,6 @@
-function calcPanelXYOffsetByProgress(align, revealDirection, panelWidth, viewportDimensions, progress) {
+function calcPanelXYOffsetByProgress(align, revealDirection, panelDimensions, viewportDimensions, progress) {
     if (typeof method[align+revealDirection] != 'undefined') {
-        return method[align+revealDirection](panelWidth, viewportDimensions, progress)
+        return method[align+revealDirection](panelDimensions, viewportDimensions, progress)
     }
 
     return {
@@ -13,28 +13,28 @@ function calcPanelXYOffsetByProgress(align, revealDirection, panelWidth, viewpor
  * Visas dažādās align + revealDirection metodes
  */
 var method = {
-    leftleft: function(w, vd, p) {
+    leftleft: function(pd, vd, p) {
         return {
-            x: -(w - w * p),
+            x: -(pd.width - pd.width * p),
             y: 0
         }
     },
     
-    leftright: function(w, vd, p) {
+    leftright: function(pd, vd, p) {
         return {
             x: vd.width - vd.width * p,
             y: 0
         }
     },
 
-    lefttop: function(w, vd, p) {
+    lefttop: function(pd, vd, p) {
         return {
             x: 0,
-            y: -(vd.height - vd.height * p)
+            y: -(pd.height - pd.height * p)
         }
     },
 
-    leftbottom: function(w, vd, p) {
+    leftbottom: function(pd, vd, p) {
         return {
             x: 0,
             y: vd.height - vd.height * p
@@ -42,28 +42,28 @@ var method = {
     },
 
 
-    rightright: function(w, vd, p) {
+    rightright: function(pd, vd, p) {
         return {
-            x: w - w * p,
+            x: pd.width - pd.width * p,
             y: 0
         }
     },
 
-    rightleft: function(w, vd, p) {
+    rightleft: function(pd, vd, p) {
         return {
-            x: -((vd.width + w) - (vd.width + w) * p),
+            x: -((vd.width + pd.width) - (vd.width + pd.width) * p),
             y: 0
         }
     },
 
-    righttop: function(w, vd, p) {
+    righttop: function(pd, vd, p) {
         return {
             x: 0,
-            y: -(vd.height - vd.height * p)
+            y: -(pd.height - pd.height * p)
         }
     },
 
-    rightbottom: function(w, vd, p) {
+    rightbottom: function(pd, vd, p) {
         return {
             x: 0,
             y: vd.height - vd.height * p
