@@ -116,17 +116,21 @@
     <script>
         (function($){
 
+            webit.panels.init();
+
             webit.panels.register('basic1', $('.panel1'), {
                 align: 'right',
-                width: function(){
-                    return 180
+                revealDirection: 'bottom',
+                width: function(viewportDimensions){
+                    return Math.min(viewportDimensions.width, 500)
                 }
             })
 
             webit.panels.register('basic2', $('.panel2'), {
                 align: 'left',
-                width: function(){
-                    return 200
+                revealDirection: 'top',
+                width: function(viewportDimensions){
+                    return Math.min(viewportDimensions.width, 500)
                 },
                 applyProgress: function(panel, progress) {
                     panel.setAnimableElementsStyle({
@@ -140,13 +144,19 @@
             $(document).on('click', '[name=open-panel1]', function(ev){
                 ev.preventDefault();
 
-                webit.panels.show('basic1');
+                webit.panels.show('basic1', false, {
+                    overlay: 500,
+                    panel: 300
+                });
             })
 
             $(document).on('click', '[name=open-panel2]', function(ev){
                 ev.preventDefault();
                 
-                webit.panels.show('basic2');
+                webit.panels.show('basic2', false, {
+                    overlay: 500,
+                    panel: 300
+                });
             })
 
         })(jQuery)
