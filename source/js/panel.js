@@ -1,8 +1,10 @@
+var Swipe = require('swipe');
 var addCssClass = require('./addCssClass');
 var removeCssClass = require('./removeCssClass');
 var addStyle = require('./addStyle');
 var getWindowDimensions = require('./getWindowDimensions');
 var calcPanelXYOffsetByProgress = require('./calcPanelXYOffsetByProgress');
+var domEvents = require('./domEvents');
 
 function panel(name, $el, props) {
 
@@ -20,13 +22,10 @@ function panel(name, $el, props) {
      * Ar šo mainīgo width tiek iekešots un tiek ielasīts
      * tikai vienu reizi beforeShow eventā
      */
-    this.panelDimensions = {
-        width: 0,
-        height: 0
-    }
+    this.panelDimensions = { width: 0, height: 0 }
     this.panelAlign = 'right';
     this.revealDirection = 'right';
-    this.windowDimensions = {};
+    this.windowDimensions = { width: 0, height: 0 }
 
     /**
      * Animējamie elementi
@@ -38,6 +37,8 @@ function panel(name, $el, props) {
         'content': $el.find('.modal-panel__content').get(0)
     }
 
+    //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
+
     this.setEvents();
 
     // Overraidojama applyProgress metode
@@ -47,6 +48,14 @@ function panel(name, $el, props) {
 panel.prototype = {
     setEvents: function() {
         var mthis = this;
+
+        // this.swipe.on('start', function(touch){
+        //     mthis.handleTouchStart(touch)
+        // }) 
+
+        domEvents.addEvent(this.el, 'touchstart', function(ev){
+            mthis.handleTouchStart(ev)
+        })
 
         /**
          * Reaģējam uz panelī definēto close pogu
@@ -69,6 +78,20 @@ panel.prototype = {
         addCssClass(el, 'modal-panel--'+this.getAlign())
 
         return el;
+    },
+
+    handleTouchStart: function(ev) {
+        
+        /**
+         * Mobile safari:
+         * Ja panel ir mazāks par windowHeight, tad jānovērš overscroll
+         * Reaģējam tikai uz this.el
+         */
+        if (this.panelDimensions.height < this.windowDimensions.height) {
+            if (domEvents.eventTarget(ev) == this.el) {
+                domEvents.preventEvent(ev);
+            }
+        }
     },
 
     getProp: function(name, defaultValue) {
@@ -178,7 +201,13 @@ panel.prototype = {
     },
 
     setHeight: function(height) {
-        addStyle(this.el, {height: height+'px'})
+        /**
+         * Mobile safari: jāuzliek windowHeight, lai neparādītos bottom pogas
+         * Visi elementi ir fixed, šis būs tas, kas saglabās windowHeight
+         * @todo Te vēl vajadzētu uzlikt touchstart eventu, lai varētu atcelt
+         * overscroll
+         */
+        addStyle(this.el, {height: this.windowDimensions.height+'px'})
 
         /**
          * Special case, kad height ir tāds pats kā viewportHeight
