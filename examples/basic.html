@@ -4,8 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
     <title>Basic</title>
-
-    <link rel="stylesheet" href="../build/panels.min.css?v=22" type="text/css" />
     
     <style>
     html, body {
@@ -20,11 +18,20 @@
     .controls {
         position: fixed;
         left: 10px;
-        right: 10px;
+        width: 50%;
         top: 10px;
 
         z-index: 1
     }
+    .log {
+        position: fixed;
+        right: 10px;
+        width: 50%;
+        top: 10px;
+
+        z-index: 1
+    }
+
     button {
         margin-top: 14px;
         width: 140px;
@@ -38,6 +45,15 @@
         font-weight: bold;
         
         -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    .input2 {
+        display: block;
+        width: 120px;
+        height: 30px;
+        line-height: 30px;
+        border: none;
+        border: 1px solid silver;
+        margin: 4px 0;
     }
     </style>
 
@@ -81,14 +97,19 @@
             <h4 class="modal-panel__heading">Heading</h4>
         </header>
 
-        <section class="modal-panel__content">panel 2</section>
+        <section class="modal-panel__content">
+            <!--div class="input" style="background: red;height: 70px" contenteditable="true"></div-->
+        </section>
         
     </div>
 
     <div class="controls">
         <button type="button" name="open-panel1">Open panel 1</button>
         <button type="button" name="open-panel2">Open panel 2</button>
+        
     </div>
+    
+    <div class="log"></div>
 
     <div class="app-w">
         <div class="app">
@@ -109,12 +130,17 @@
         </div>
     </div>
 
-    <script src="../build/panels.min.js?v=22"></script>
-
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         
     <script>
-        (function($){
+        function log(t) {
+            console.log(t);
+            $('.log').append(t)
+        }
+
+        function init($){
+
+            console.log('asdasd');
 
             webit.panels.init();
 
@@ -122,7 +148,7 @@
                 align: 'right',
                 revealDirection: 'bottom',
                 width: function(viewportDimensions){
-                    return Math.min(viewportDimensions.width, 500)
+                    return Math.min(viewportDimensions.width, 200)
                 }
             })
 
@@ -151,8 +177,26 @@
                 });
             })
 
+            
+            /**
+             * mobile safari fix
+             * Touch start ir tas mirklis, kad var paspēt sakārtot
+             * window scrollTop pirms lauka iefokusēšanas
+             * Fokusējamajam laukam jābūt viewpoortā, lai nenotiku 
+             * nevēlamā ekrāna scrollēšana
+             */
+            $(document).on('touchstart', '[name=open-panel2]', function(ev){
+            
+                //log('t1');
+                //window.scrollTo(0,0)
+                
+            })
+
             $(document).on('click', '[name=open-panel2]', function(ev){
                 ev.preventDefault();
+
+                //$('.panel2 .input').focus();
+                //$('[name=input2]').focus();
                 
                 webit.panels.show('basic2', false, {
                     overlay: 500,
@@ -160,7 +204,31 @@
                 });
             })
 
-        })(jQuery)
+
+        }
+    </script>
+
+    <script>
+        (function(d){
+            var s = d.createElement('link');
+            d.getElementsByTagName('head')[0].appendChild(s);
+            s.setAttribute('type', 'text/css');
+            s.setAttribute('rel', 'stylesheet');
+            s.setAttribute('href', '../build/panels.min.css?v='+(new Date()).getTime());
+
+            
+            var s = d.createElement('script');
+            d.getElementsByTagName('head')[0].appendChild(s);
+            s.src = '../build/panels.min.js?v='+(new Date()).getTime();
+            s.onload = function(){
+                init(jQuery)
+            }
+            s.onreadystatechange= function () {
+                if (this.readyState == 'complete') {
+                    init(jQuery)
+                }
+           }
+        })(document)
     </script>
 </body>
 </html>
