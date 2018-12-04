@@ -2,10 +2,17 @@ var Stepper = require('stepper');
 var BodyScroll = require('./bodyScrollDisable');
 var Overlay = require('./overlay');
 var Panel = require('./panel');
+var fireCallbacks = require('./fireCallbacks');
+var propPushToArray = require('./propPushToArray');
+var validateAnimDurations = require('./validateAnimDurations');
 
 var Step, OverlayStep, panels = {}, 
     needToShowOverlay = true, needToHideOverlay = true, 
-    openPanelsCount = 0, openPanelsStack = [];
+    openPanelsCount = 0, openPanelsStack = []
+    callbacks = {
+        hide: {},
+        show: {}
+    };
 
 function init() {
     Step = new Stepper();
@@ -34,10 +41,28 @@ function getPanel(name) {
 
 function setPanelEvents(Panel) {
     Panel.onClose(function(){
-        hidePanel(Panel)
+        handlePanelHide(Panel)
     })
 }
 
+function handlePanelShow(Panel, animDurations) {
+    showPanel(Panel, animDurations);
+}
+
+/**
+ * Panel hide event
+ */
+function handlePanelHide(Panel, animDurations) {
+    // Ja panelim ir custom close callback, tad tam padodam iekšejo close metodi
+    if (typeof callbacks.hide[Panel.name] != 'undefined') {
+        fireCallbacks(callbacks.hide[Panel.name], [function(){
+            hidePanel(Panel, animDurations)
+        }])
+    }
+    else {
+        hidePanel(Panel, animDurations)
+    }
+}
 
 function panelBeforeShow(panel) {
     openPanelsCount++;
@@ -88,22 +113,8 @@ function panelAfterHide(panel) {
     panel.afterHide();
 }
 
-function showPanel(panel, withoutAnimation, animDurations) {
-
-    if (typeof panel != 'object') {
-        panel = getPanel(panel);
-    }
-
-    if (typeof withoutAnimation == 'undefined') {
-        withoutAnimation = false;
-    }
-
-    if (typeof animDurations == 'undefined') {
-        animDurations = {
-            overlay: 500,
-            panel: 500
-        }
-    }
+function showPanel(panel, animDurations) {
+    animDurations = validateAnimDurations(animDurations);
 
     // Iepriekšējo paneli, ja tāds ir, disable
     if (openPanelsCount > 0) {
@@ -114,7 +125,7 @@ function showPanel(panel, withoutAnimation, animDurations) {
 
     if (needToShowOverlay) {
 
-        if (withoutAnimation) {
+        if (animDurations.overlay <= 0) {
             Overlay.applyProgress(1)
         }
         else {
@@ -127,7 +138,7 @@ function showPanel(panel, withoutAnimation, animDurations) {
         
     }
 
-    if (withoutAnimation) {
+    if (animDurations.panel <= 0) {
         panel.applyProgress(1);
         if (panel.showPanelDone) {
             panel.showPanelDone()
@@ -150,26 +161,13 @@ function showPanel(panel, withoutAnimation, animDurations) {
     
 }
 
-function hidePanel(panel, withoutAnimation, animDurations) {
-    if (typeof panel != 'object') {
-        panel = getPanel(panel);
-    }
-
-    if (typeof withoutAnimation == 'undefined') {
-        withoutAnimation = false;
-    }
-
-    if (typeof animDurations == 'undefined') {
-        animDurations = {
-            overlay: 500,
-            panel: 500
-        }
-    }
+function hidePanel(panel, animDurations) {
+    animDurations = validateAnimDurations(animDurations);
 
     panelBeforeHide(panel);
 
     if (needToHideOverlay) {
-        if (withoutAnimation) {
+        if (animDurations.overlay <= 0) {
             Overlay.applyProgress(0)
         }
         else {
@@ -182,7 +180,7 @@ function hidePanel(panel, withoutAnimation, animDurations) {
         
     }
 
-    if (withoutAnimation) {
+    if (animDurations.panel <= 0) {
         panel.applyProgress(0);
         panelAfterHide(panel);
     }
@@ -200,7 +198,10 @@ function hidePanel(panel, withoutAnimation, animDurations) {
 }
 
 function hidePanelImediately(panel) {
-    hidePanel(panel, true)
+    hidePanel(panel, {
+        overlay: 0,
+        panel: 0
+    })
 }
 
 function hideAll(){
@@ -224,8 +225,16 @@ module.exports = {
 
     registerPanel: registerPanel,
     getPanel: getPanel,
-    showPanel: showPanel,
-    hidePanel: hidePanel,
+    showPanel: function(panelName, animDurations) {
+        handlePanelShow(getPanel(panelName), animDurations)
+    },
+    hidePanel: function(panelName, animDurations) {
+        handlePanelHide(getPanel(panelName), animDurations)
+    },
 
-    hideAll: hideAll
+    hideAll: hideAll,
+
+    onHide: function(panelName, cb) {
+        callbacks.hide = propPushToArray(callbacks.hide, panelName, cb)
+    }
 }
