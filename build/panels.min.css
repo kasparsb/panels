@@ -25,8 +25,15 @@
   /** Vienmēr taisām, lai pārklāj visu ekrānu
      * Sākuma stadijā ir overflow hidden, lai &__w varētu
      * nopoziconēt ārpus ekrāna un tad ar animāciju iebīdīt ekrānā
+     *
+     * Mobile safari note: nedrīkst taisīt fixed, jo tad pazūd viss 
+     * flows, un parādās bottom pogas un adreses josla. (ja tie bija
+     * samazināti, kad tiek skrollēts uz leju)
+     * Fixed elements var būt augstāks par window un tā pat neparādās
+     * scrollbars, un tas ir tas, kas liek safari domāt, 
+     * ka lapā satura nav (laikam tā ir)
      */
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;
