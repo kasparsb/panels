@@ -140,8 +140,6 @@
 
         function init($){
 
-            console.log('asdasd');
-
             webit.panels.init();
 
             webit.panels.register('basic1', $('.panel1'), {
@@ -155,6 +153,10 @@
             webit.panels.register('basic2', $('.panel2'), {
                 align: 'left',
                 revealDirection: 'top',
+                animDurations: {
+                    overlay: 200,
+                    panel: 300
+                },
                 width: function(viewportDimensions){
                     return Math.min(viewportDimensions.width, 500)
                 },
@@ -168,13 +170,15 @@
                 }
             })
 
+            // webit.panels.onHide('basic1', function(panelHide){
+            //     console.log('handle close');
+            //     panelHide();
+            // })
+
             $(document).on('click', '[name=open-panel1]', function(ev){
                 ev.preventDefault();
-
-                webit.panels.show('basic1', false, {
-                    overlay: 500,
-                    panel: 300
-                });
+                console.log('open panel1');
+                webit.panels.show('basic1');
             })
 
             
