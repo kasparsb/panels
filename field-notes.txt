@@ -4,7 +4,7 @@ Panel
         fade - opacity
     reveal direction (no kuras puses)
         right
-        top
+        top - šeit jāčeko izmērs, ja tas ir augstāks kā window, tad nākot iekšā paneļa apakša būs jau redzama
         bottom
         left
     overlay: vai vajag overlay
