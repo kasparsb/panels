@@ -1,0 +1,17 @@
+Panel
+    reveal type
+        slide
+        fade - opacity
+    reveal direction (no kuras puses)
+        right
+        top
+        bottom
+        left
+    overlay: vai vajag overlay
+    block body scroll
+
+Panel show callback
+    applyProgress
+        te vajag dabūt overlay istanci
+        un body instaci - tas ir iekadrētais body gabals
+
