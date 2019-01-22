@@ -157,10 +157,12 @@
                     overlay: 200,
                     panel: 300
                 },
+                
                 width: function(viewportDimensions){
                     return Math.min(viewportDimensions.width, 500)
                 },
                 height: 200,
+
                 applyProgress: function(panel, progress) {
                     panel.setAnimableElementsStyle({
                         'opacity': progress
@@ -178,7 +180,9 @@
             $(document).on('click', '[name=open-panel1]', function(ev){
                 ev.preventDefault();
                 console.log('open panel1');
-                webit.panels.show('basic1');
+                webit.panels.show('basic1', {
+                    showOverlay: false
+                });
             })
 
             
@@ -189,12 +193,12 @@
              * Fokusējamajam laukam jābūt viewpoortā, lai nenotiku 
              * nevēlamā ekrāna scrollēšana
              */
-            $(document).on('touchstart', '[name=open-panel2]', function(ev){
+            // $(document).on('touchstart', '[name=open-panel2]', function(ev){
             
-                //log('t1');
-                //window.scrollTo(0,0)
+            //     //log('t1');
+            //     //window.scrollTo(0,0)
                 
-            })
+            // })
 
             $(document).on('click', '[name=open-panel2]', function(ev){
                 ev.preventDefault();
@@ -202,9 +206,13 @@
                 //$('.panel2 .input').focus();
                 //$('[name=input2]').focus();
                 
-                webit.panels.show('basic2', false, {
-                    overlay: 500,
-                    panel: 300
+                webit.panels.show('basic2', {
+                    animDuration: {
+                        overlay: 500,
+                        panel: 300    
+                    },
+                    showOverlay: false,
+                    hideOnOutsideClick: true
                 });
             })
 
