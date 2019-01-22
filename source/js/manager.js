@@ -4,6 +4,7 @@ var Overlay = require('./overlay');
 var Panel = require('./panel');
 var fireCallbacks = require('./fireCallbacks');
 var propPushToArray = require('./propPushToArray');
+var getData = require('./getData');
 var validateAnimDurations = require('./validateAnimDurations');
 
 var Step, OverlayStep, panels = {}, 
@@ -45,22 +46,22 @@ function setPanelEvents(Panel) {
     })
 }
 
-function handlePanelShow(Panel, animDurations) {
-    showPanel(Panel, animDurations);
+function handlePanelShow(Panel, config) {
+    showPanel(Panel, config);
 }
 
 /**
  * Panel hide event
  */
-function handlePanelHide(Panel, animDurations) {
+function handlePanelHide(Panel, config) {
     // Ja panelim ir custom close callback, tad tam padodam iekšejo close metodi
     if (typeof callbacks.hide[Panel.name] != 'undefined') {
         fireCallbacks(callbacks.hide[Panel.name], [function(){
-            hidePanel(Panel, animDurations)
+            hidePanel(Panel, config)
         }])
     }
     else {
-        hidePanel(Panel, animDurations)
+        hidePanel(Panel, config)
     }
 }
 
@@ -113,8 +114,11 @@ function panelAfterHide(panel) {
     panel.afterHide();
 }
 
-function showPanel(panel, animDurations) {
-    animDurations = validateAnimDurations(animDurations);
+function showPanel(panel, config) {
+    var animDurations = validateAnimDurations(getData(config, 'animDurations'));
+    var showOverlay = getData(config, 'showOverlay', true);
+
+    panel.hideOnOutsideClick = getData(config, 'hideOnOutsideClick', false);
 
     // Iepriekšējo paneli, ja tāds ir, disable
     if (openPanelsCount > 0) {
@@ -123,7 +127,7 @@ function showPanel(panel, animDurations) {
 
     panelBeforeShow(panel);
 
-    if (needToShowOverlay) {
+    if (showOverlay && needToShowOverlay) {
 
         if (animDurations.overlay <= 0) {
             Overlay.applyProgress(1)
@@ -161,8 +165,8 @@ function showPanel(panel, animDurations) {
     
 }
 
-function hidePanel(panel, animDurations) {
-    animDurations = validateAnimDurations(animDurations);
+function hidePanel(panel, config) {
+    var animDurations = validateAnimDurations(getData(config, 'animDurations'));
 
     panelBeforeHide(panel);
 
@@ -225,11 +229,12 @@ module.exports = {
 
     registerPanel: registerPanel,
     getPanel: getPanel,
-    showPanel: function(panelName, animDurations) {
-        handlePanelShow(getPanel(panelName), animDurations)
+
+    showPanel: function(panelName, config) {
+        handlePanelShow(getPanel(panelName), config)
     },
-    hidePanel: function(panelName, animDurations) {
-        handlePanelHide(getPanel(panelName), animDurations)
+    hidePanel: function(panelName, props) {
+        handlePanelHide(getPanel(panelName), props)
     },
 
     hideAll: hideAll,

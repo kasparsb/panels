@@ -1,10 +1,12 @@
 var Swipe = require('swipe');
 var addCssClass = require('./addCssClass');
+var hasCssClass = require('./hasCssClass');
 var removeCssClass = require('./removeCssClass');
 var addStyle = require('./addStyle');
 var getWindowDimensions = require('./getWindowDimensions');
 var calcPanelXYOffsetByProgress = require('./calcPanelXYOffsetByProgress');
 var domEvents = require('./domEvents');
+var eventTarget = require('./eventTarget');
 
 function panel(name, $el, props) {
 
@@ -16,6 +18,12 @@ function panel(name, $el, props) {
 
     this.$el = $el;
     this.el = this.prepareEl($el.get(0));
+
+    /**
+     * Ja noklikšķināts ārpus body, tad aizvērt
+     * Vizuāli it kā uz overlay noklikšķināts
+     */
+    this.hideOnOutsideClick = false;
 
     /**
      * Paneļa platums. Šis tiek ņemts no props.width
@@ -53,21 +61,35 @@ panel.prototype = {
         //     mthis.handleTouchStart(touch)
         // }) 
 
-        domEvents.addEvent(this.el, 'touchstart', function(ev){
-            mthis.handleTouchStart(ev)
-        })
+        // domEvents.addEvent(this.el, 'touchstart', function(ev){
+        //     mthis.handleTouchStart(ev)
+        // })
 
-        /**
-         * Reaģējam uz panelī definēto close pogu
-         * closeCb nāk no panelsManager, kura šādā 
-         * veidā pateiksim, ka ir jāaizveras
-         */
-        this.$el.on('click', '.modal-panel__close', function(ev){
-            ev.preventDefault();
-
+        domEvents.addEvent(this.el, 'click', function(ev){
+            var el = eventTarget(ev);
+            var closePanel = false;
             
-            if (mthis.closeCb) {
-                mthis.closeCb();    
+            // Pats panelis, reaģējam uz ārpus paneļa body click
+            if (el == mthis.el) {
+                if (mthis.hideOnOutsideClick) {
+                    closePanel = true;
+                }
+            }
+            else if (hasCssClass(el, 'modal-panel__close')) {
+                /**
+                 * Reaģējam uz panelī definēto close pogu
+                 * closeCb nāk no panelsManager, kura šādā 
+                 * veidā pateiksim, ka ir jāaizveras
+                 */
+                closePanel = true;
+            }
+
+            if (closePanel) {
+                ev.preventDefault();
+
+                if (mthis.closeCb) {
+                    mthis.closeCb();
+                }
             }
         })
     },
@@ -80,19 +102,22 @@ panel.prototype = {
         return el;
     },
 
-    handleTouchStart: function(ev) {
-        
-        /**
-         * Mobile safari:
-         * Ja panel ir mazāks par windowHeight, tad jānovērš overscroll
-         * Reaģējam tikai uz this.el
-         */
-        if (this.panelDimensions.height < this.windowDimensions.height) {
-            if (domEvents.eventTarget(ev) == this.el) {
-                domEvents.preventEvent(ev);
-            }
-        }
-    },
+    
+    /**
+     * @todo Jāpārdomā vai šo tiešām vajag, jo šis pārtrauc onClick eventu
+     */
+    // handleTouchStart: function(ev) {
+    //     /**
+    //      * Mobile safari:
+    //      * Ja panel ir mazāks par windowHeight, tad jānovērš overscroll
+    //      * Reaģējam tikai uz this.el
+    //      */
+    //     if (this.panelDimensions.height < this.windowDimensions.height) {
+    //         if (domEvents.eventTarget(ev) == this.el) {
+    //             domEvents.preventEvent(ev);
+    //         }
+    //     }
+    // },
 
     getProp: function(name, defaultValue) {
         if (typeof this.props[name] == 'undefined') {

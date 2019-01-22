@@ -1,10 +1,15 @@
 var addCssClass = require('./addCssClass');
 var removeCssClass = require('./removeCssClass');
+var domEvents = require('./domEvents');
 
-var el, visible = false;
+var el, visible = false, onClickCallbacks = [];
 
 function init() {
     createEl();
+
+    // domEvents.addEvent(el, 'click', function(ev){
+        
+    // })
 }
 
 /**
@@ -39,11 +44,16 @@ function isVisible() {
     return visible;
 }
 
+function onClick(cb) {
+    onClickCallbacks.push(cb);
+}
+
 module.exports = {
     init: init,
     beforeShow: beforeShow,
     beforeHide: beforeHide,
     afterHide: afterHide,
     applyProgress: applyProgress,
-    isVisible: isVisible
+    isVisible: isVisible,
+    onClick: onClick
 }
