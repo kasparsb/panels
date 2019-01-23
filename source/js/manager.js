@@ -177,8 +177,18 @@ function showPanel(panel, config) {
 
 function hidePanel(panel, config) {
     panel.setOverrideProps(config);
-
     var animDurations = validateAnimDurations(panel.getProp('animDurations'));
+
+    var done = function() {
+        if (OverlayStep.isRunning() || Step.isRunning()) {
+            return;
+        }
+
+        panelAfterHide(panel);
+
+        // Notīrām override props
+        panel.setOverrideProps(null);
+    }
 
     panelBeforeHide(panel);
 
@@ -189,11 +199,11 @@ function hidePanel(panel, config) {
         else {
             OverlayStep.run(animDurations.overlay, [0.455, 0.03, 0.515, 0.955],
                 function(p){
-
                     if (Overlay.getProgress() >= (1-p)) {
                         Overlay.applyProgress(1-p)
                     }
-                }
+                },
+                done
             )
         }        
     }
@@ -209,11 +219,7 @@ function hidePanel(panel, config) {
             function(p){
                 panel.applyProgress(1-p)
             }, 
-            function(){
-                panelAfterHide(panel);
-
-                panel.setOverrideProps(null);
-            }
+            done
         )    
     }
     
