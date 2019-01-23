@@ -48,9 +48,6 @@ function panel(name, $el, props) {
     //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
 
     this.setEvents();
-
-    // Overraidojama applyProgress metode
-    this._applyProgress = this.getProp('applyProgress', this.defaultApplyProgress)
 }
 
 panel.prototype = {
@@ -190,24 +187,31 @@ panel.prototype = {
      * _applyProgress tiek nodefinēts konstruktorā
      */
     applyProgress: function(progress) {
-        this._applyProgress(this, progress)
+        var mthis = this;
+
+        // Ja ir custom applyProgress metode
+        if (this.getProp('applyProgress')) {
+            this.getProp('applyProgress')(this, progress, function(progress){
+                mthis.applyProgressDefault(progress)
+            })
+        }
+        else {
+            this.applyProgressDefault(progress)
+        }
     },
 
     /**
      * applyProgress ir iespēja overraidot. 
      * Šī ir default applyProgress funkcionalitāte
-     * @param object Panel instance. Šajā gadījumā tas ir this
-     * bet, lai būtu vieglāk saprast kā overraidot, tad šeit
-     * tiek padots panel, tā pat kā custom applyProgress gadījumā
      * @param number Progress: 0 - sākuma stāvoklis (aizvērts), 1 - pilnībā atvērts
      */
-    defaultApplyProgress: function(panel, progress) {
-        panel.setXYOffset(
+    applyProgressDefault: function(progress) {
+        this.setXYOffset(
             calcPanelXYOffsetByProgress(
-                panel.panelAlign, 
-                panel.revealDirection,
-                panel.panelDimensions,
-                panel.windowDimensions,
+                this.panelAlign, 
+                this.revealDirection,
+                this.panelDimensions,
+                this.windowDimensions,
                 progress
             )
         );
