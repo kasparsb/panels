@@ -15,6 +15,13 @@ function panel(name, $el, props) {
 
     this.name = name;
     this.props = props;
+    /**
+     * Override props. 
+     * Šos var uzstādīt veicot show vai hide, tad var padots
+     * savādākus props.
+     * Kad nolasīs props, tad kā prioritāte būs props2
+     */
+    this.props2 = undefined;
 
     this.$el = $el;
     this.el = this.prepareEl($el.get(0));
@@ -116,12 +123,24 @@ panel.prototype = {
     //     }
     // },
 
+    setOverrideProps: function(props) {
+        this.props2 = props;
+    },
+
     getProp: function(name, defaultValue) {
-        if (typeof this.props[name] == 'undefined') {
-            return defaultValue
+        // Override props. Šos skatamies pirmos
+        if (this.props2) {
+            if (typeof this.props2[name] != 'undefined') {
+                return this.props2[name];
+            }
+        }       
+
+        // Default props, kuri uzlikti konstruktora laikā
+        if (typeof this.props[name] != 'undefined') {
+            return this.props[name]
         }
 
-        return this.props[name]
+        return defaultValue
     },
 
     /**

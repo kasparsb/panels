@@ -115,10 +115,16 @@ function panelAfterHide(panel) {
 }
 
 function showPanel(panel, config) {
-    var animDurations = validateAnimDurations(getData(config, 'animDurations'));
-    var showOverlay = getData(config, 'showOverlay', true);
 
-    panel.hideOnOutsideClick = getData(config, 'hideOnOutsideClick', false);
+    panel.setOverrideProps(config);
+
+
+    var animDurations = validateAnimDurations(panel.getProp('animDurations'));
+    var showOverlay = panel.getProp('showOverlay', true);
+
+    console.log('showPanel', animDurations);
+
+    panel.hideOnOutsideClick = panel.getProp('hideOnOutsideClick', false);
 
     // Iepriekšējo paneli, ja tāds ir, disable
     if (openPanelsCount > 0) {
@@ -147,6 +153,8 @@ function showPanel(panel, config) {
         if (panel.showPanelDone) {
             panel.showPanelDone()
         }
+
+        panel.setOverrideProps(null);
     }
     else {
         setTimeout(function(){
@@ -158,6 +166,8 @@ function showPanel(panel, config) {
                     if (panel.showPanelDone) {
                         panel.showPanelDone()
                     }
+
+                    panel.setOverrideProps(null);
                 }
             )
         }, 140)
@@ -166,7 +176,9 @@ function showPanel(panel, config) {
 }
 
 function hidePanel(panel, config) {
-    var animDurations = validateAnimDurations(getData(config, 'animDurations'));
+    panel.setOverrideProps(config);
+
+    var animDurations = validateAnimDurations(panel.getProp('animDurations'));
 
     panelBeforeHide(panel);
 
@@ -177,16 +189,20 @@ function hidePanel(panel, config) {
         else {
             OverlayStep.run(animDurations.overlay, [0.455, 0.03, 0.515, 0.955],
                 function(p){
-                    Overlay.applyProgress(1-p)
+
+                    if (Overlay.getProgress() >= (1-p)) {
+                        Overlay.applyProgress(1-p)
+                    }
                 }
             )
-        }
-        
+        }        
     }
 
     if (animDurations.panel <= 0) {
         panel.applyProgress(0);
         panelAfterHide(panel);
+
+        panel.setOverrideProps(null);
     }
     else {
         Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955], 
@@ -195,6 +211,8 @@ function hidePanel(panel, config) {
             }, 
             function(){
                 panelAfterHide(panel);
+
+                panel.setOverrideProps(null);
             }
         )    
     }

@@ -1,15 +1,10 @@
 var addCssClass = require('./addCssClass');
 var removeCssClass = require('./removeCssClass');
-var domEvents = require('./domEvents');
 
-var el, visible = false, onClickCallbacks = [];
+var el, visible = false, currentProgress;
 
 function init() {
     createEl();
-
-    // domEvents.addEvent(el, 'click', function(ev){
-        
-    // })
 }
 
 /**
@@ -37,6 +32,7 @@ function afterHide() {
 }
 
 function applyProgress(p) {
+    currentProgress = p;
     el.style.opacity = p;
 }
 
@@ -55,5 +51,7 @@ module.exports = {
     afterHide: afterHide,
     applyProgress: applyProgress,
     isVisible: isVisible,
-    onClick: onClick
+    getProgress: function() {
+        return currentProgress
+    }
 }
