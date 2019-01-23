@@ -7,7 +7,7 @@ Panel
         top - šeit jāčeko izmērs, ja tas ir augstāks kā window, tad nākot iekšā paneļa apakša būs jau redzama
         bottom
         left
-    overlay: vai vajag overlay
+    DONE overlay: vai vajag overlay
     block body scroll
 
 Panel show callback
@@ -21,6 +21,7 @@ Panel show callback
 panel config
     align - ja panelis ir šaurāks/zemāks par viewport, tad kurā pusē to izkārtot
         te vajag horizontalAlign un verticalAlign
+    align jāpārsauc par x, y: vērtības var būt skaitliskas, % un ar vārdiem (top, left, right, bottom, center)
     width
     height
     revealType: slide|fade
@@ -34,3 +35,9 @@ panel events
     onHide
     onShow
 
+
+
+panel props (config) - tad, kad reģistrē paneli
+panel show config - šitie var overraidot konstruktorā panel padoto config
+
+Čekot overlay on panel animācijas. Ja panel animācija ir īsāka par overlay, tad overlay animācija tiek aprauta
