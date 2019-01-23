@@ -153,9 +153,13 @@
             webit.panels.register('basic2', $('.panel2'), {
                 align: 'left',
                 revealDirection: 'top',
+
+                showOverlay: true,
+                hideOnOutsideClick: true,
+                
                 animDurations: {
-                    overlay: 200,
-                    panel: 300
+                    overlay: 900,
+                    panel: 200
                 },
                 
                 width: function(viewportDimensions){
@@ -163,12 +167,13 @@
                 },
                 height: 200,
 
-                applyProgress: function(panel, progress) {
+                applyProgress: function(panel, progress, applyProgress) {
+                    
                     panel.setAnimableElementsStyle({
                         'opacity': progress
                     });
                     
-                    panel.defaultApplyProgress(panel, progress)
+                    applyProgress(progress)
                 }
             })
 
@@ -207,12 +212,10 @@
                 //$('[name=input2]').focus();
                 
                 webit.panels.show('basic2', {
-                    animDuration: {
+                    animDurations: {
                         overlay: 500,
-                        panel: 300    
-                    },
-                    showOverlay: false,
-                    hideOnOutsideClick: true
+                        panel: 100    
+                    }
                 });
             })
 
