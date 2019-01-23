@@ -145,6 +145,10 @@
             webit.panels.register('basic1', $('.panel1'), {
                 align: 'right',
                 revealDirection: 'bottom',
+                animDurations: {
+                    overlay: 900,
+                    panel: 200
+                },
                 width: function(viewportDimensions){
                     return Math.min(viewportDimensions.width, 200)
                 }
@@ -167,8 +171,12 @@
                 },
                 height: 200,
 
-                applyProgress: function(panel, progress, applyProgress) {
-                    
+                applyProgress: function(panel, progress, applyProgress, bodyFrame) {
+
+                    bodyFrame.setStyle({
+                        transform: 'scale('+(1 - (0.3*progress))+')'
+                    })
+
                     panel.setAnimableElementsStyle({
                         'opacity': progress
                     });
@@ -184,7 +192,7 @@
 
             $(document).on('click', '[name=open-panel1]', function(ev){
                 ev.preventDefault();
-                console.log('open panel1');
+                
                 webit.panels.show('basic1', {
                     showOverlay: false
                 });
