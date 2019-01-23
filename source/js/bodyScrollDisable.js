@@ -39,5 +39,13 @@ function enable() {
 module.exports = {
     init: init,
     disable: disable,
-    enable: enable
+    enable: enable,
+    getEl: function() {
+        return {
+            setStyle: function(style){
+                addStyle(appContainer, style)
+            },
+            el: appContainer
+        }
+    }
 }

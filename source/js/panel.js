@@ -12,6 +12,7 @@ function panel(name, $el, props) {
 
     this.closeCb = undefined;
     this.beforeShowCb = undefined;
+    this.applyProgressCb = undefined;
 
     this.hideInProgress = false;
 
@@ -193,30 +194,7 @@ panel.prototype = {
         }
     },
 
-    /**
-     * Interfeiss priekš īstās applyProgress metodes
-     * _applyProgress tiek nodefinēts konstruktorā
-     */
     applyProgress: function(progress) {
-        var mthis = this;
-
-        // Ja ir custom applyProgress metode
-        if (this.getProp('applyProgress')) {
-            this.getProp('applyProgress')(this, progress, function(progress){
-                mthis.applyProgressDefault(progress)
-            })
-        }
-        else {
-            this.applyProgressDefault(progress)
-        }
-    },
-
-    /**
-     * applyProgress ir iespēja overraidot. 
-     * Šī ir default applyProgress funkcionalitāte
-     * @param number Progress: 0 - sākuma stāvoklis (aizvērts), 1 - pilnībā atvērts
-     */
-    applyProgressDefault: function(progress) {
         this.setXYOffset(
             calcPanelXYOffsetByProgress(
                 this.panelAlign, 
@@ -333,6 +311,10 @@ panel.prototype = {
 
     onClose: function(cb) {
         this.closeCb = cb
+    },
+
+    onApplyProgress: function(cb) {
+        this.applyProgressCb = cb
     },
 
     onBeforeShow: function(cb) {

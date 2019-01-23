@@ -44,6 +44,10 @@ function setPanelEvents(Panel) {
     Panel.onClose(function(){
         handlePanelHide(Panel)
     })
+
+    Panel.onApplyProgress(function(){
+        
+    })
 }
 
 function handlePanelShow(Panel, config) {
@@ -157,10 +161,22 @@ function showPanel(panel, config) {
         panel.setOverrideProps(null);
     }
     else {
+
+        var applyProgressCb = createPanelApplyProgressCallback(panel);
+
         setTimeout(function(){
             Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955],
                 function(p){
-                    panel.applyProgress(p)
+
+                    applyProgressCb(
+                        panel, 
+                        p, 
+                        function(p){
+                            panel.applyProgress(p)
+                        },
+                        BodyScroll.getEl()
+                    )
+
                 }, 
                 function(){
                     if (panel.showPanelDone) {
@@ -214,9 +230,21 @@ function hidePanel(panel, config) {
         done();
     }
     else {
+        var applyProgressCb = createPanelApplyProgressCallback(panel);
+
         Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955], 
             function(p){
-                panel.applyProgress(1-p)
+                
+                // Padodam panel, progress, default applyProgress metodi, kura ir obligāti
+                // jāizsauc no custom applyProgress funkcijas
+                applyProgressCb(
+                    panel,
+                    1-p,
+                    function(p){
+                        panel.applyProgress(p)
+                    },
+                    BodyScroll.getEl()
+                )
             }, 
             done
         )    
@@ -245,6 +273,24 @@ function hideAll(){
 
         hidePanel(r[r.length-1]);
     }
+}
+
+/**
+ * Šī ir funkcija, kura vienkārši izpildīs padoto defaultApplyProgress
+ * un nekādas papildus darbības neveiks
+ * Šī ir kā signature funkciju, kura ir jāizmanto, ja vēlas overraidot apply progress
+ * šeit ir redzami visi parametri, kuri tiks padoti funkcijai
+ */
+function defaultPanelApplyProgressCallback(panel, p, defaultApplyProgress, bodyFrame) {
+    defaultApplyProgress(p);
+}
+
+/**
+ * Meklējam custom applyProgress paneļa props iestatījumos
+ * Ja nav, tad izmantosim defaultApplyProgress funkciju
+ */
+function createPanelApplyProgressCallback(panel) {
+    return panel.getProp('applyProgress', defaultPanelApplyProgressCallback);
 }
 
 module.exports = {
