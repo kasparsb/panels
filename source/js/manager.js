@@ -54,6 +54,11 @@ function handlePanelShow(Panel, config) {
  * Panel hide event
  */
 function handlePanelHide(Panel, config) {
+
+    if (Panel.hideInProgress) {
+        return;
+    }
+
     // Ja panelim ir custom close callback, tad tam padodam iekšejo close metodi
     if (typeof callbacks.hide[Panel.name] != 'undefined') {
         fireCallbacks(callbacks.hide[Panel.name], [function(){
@@ -118,13 +123,8 @@ function showPanel(panel, config) {
 
     panel.setOverrideProps(config);
 
-
     var animDurations = validateAnimDurations(panel.getProp('animDurations'));
     var showOverlay = panel.getProp('showOverlay', true);
-
-    console.log('showPanel', animDurations);
-
-    panel.hideOnOutsideClick = panel.getProp('hideOnOutsideClick', false);
 
     // Iepriekšējo paneli, ja tāds ir, disable
     if (openPanelsCount > 0) {
@@ -194,7 +194,7 @@ function hidePanel(panel, config) {
 
     if (needToHideOverlay) {
         if (animDurations.overlay <= 0) {
-            Overlay.applyProgress(0)
+            Overlay.applyProgress(0);
         }
         else {
             OverlayStep.run(animDurations.overlay, [0.455, 0.03, 0.515, 0.955],
@@ -210,9 +210,8 @@ function hidePanel(panel, config) {
 
     if (animDurations.panel <= 0) {
         panel.applyProgress(0);
-        panelAfterHide(panel);
-
-        panel.setOverrideProps(null);
+        
+        done();
     }
     else {
         Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955], 

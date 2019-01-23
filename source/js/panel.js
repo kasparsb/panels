@@ -13,6 +13,8 @@ function panel(name, $el, props) {
     this.closeCb = undefined;
     this.beforeShowCb = undefined;
 
+    this.hideInProgress = false;
+
     this.name = name;
     this.props = props;
     /**
@@ -24,13 +26,11 @@ function panel(name, $el, props) {
     this.props2 = undefined;
 
     this.$el = $el;
-    this.el = this.prepareEl($el.get(0));
-
     /**
-     * Ja noklikšķināts ārpus body, tad aizvērt
-     * Vizuāli it kā uz overlay noklikšķināts
+     * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
+     * Jāvar darboties arī, ja ir padots native dom elements
      */
-    this.hideOnOutsideClick = false;
+    this.el = this.prepareEl($el.get(0));
 
     /**
      * Paneļa platums. Šis tiek ņemts no props.width
@@ -61,21 +61,13 @@ panel.prototype = {
     setEvents: function() {
         var mthis = this;
 
-        // this.swipe.on('start', function(touch){
-        //     mthis.handleTouchStart(touch)
-        // }) 
-
-        // domEvents.addEvent(this.el, 'touchstart', function(ev){
-        //     mthis.handleTouchStart(ev)
-        // })
-
         domEvents.addEvent(this.el, 'click', function(ev){
             var el = eventTarget(ev);
             var closePanel = false;
             
             // Pats panelis, reaģējam uz ārpus paneļa body click
             if (el == mthis.el) {
-                if (mthis.hideOnOutsideClick) {
+                if (mthis.getProp('hideOnOutsideClick', false)) {
                     closePanel = true;
                 }
             }
@@ -320,11 +312,15 @@ panel.prototype = {
     },
 
     beforeHide: function() {
+        this.hideInProgress = true;
+
         removeCssClass(this.el, 'modal-panel--ready');
     },
 
     afterHide: function() {
         removeCssClass(this.el, 'modal-panel--visible');
+
+        this.hideInProgress = false;
     },
 
     disable: function() {
