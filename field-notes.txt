@@ -37,7 +37,24 @@ panel events
 
 
 
-panel props (config) - tad, kad reģistrē paneli
-panel show config - šitie var overraidot konstruktorā panel padoto config
+DONE panel props (config) - tad, kad reģistrē paneli
+DONE panel show config - šitie var overraidot konstruktorā panel padoto config
 
-Čekot overlay on panel animācijas. Ja panel animācija ir īsāka par overlay, tad overlay animācija tiek aprauta
+DONE Čekot overlay on panel animācijas. Ja panel animācija ir īsāka par overlay, tad overlay animācija tiek aprauta
+
+Iespēju nokonfigurēt uzreiz aizvēršanas un atvēršanas animDurations
+{
+    panel: 200,
+    overlay: 200,
+
+    show {
+        overlay: 400
+    }
+
+    hide {
+        panel: 300,
+        overlay: 100
+    }
+
+
+}
