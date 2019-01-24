@@ -27,11 +27,6 @@ function panel(name, $el, props) {
     this.props2 = undefined;
 
     this.$el = $el;
-    /**
-     * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
-     * Jāvar darboties arī, ja ir padots native dom elements
-     */
-    this.el = this.prepareEl($el.get(0));
 
     /**
      * Paneļa platums. Šis tiek ņemts no props.width
@@ -39,9 +34,11 @@ function panel(name, $el, props) {
      * tikai vienu reizi beforeShow eventā
      */
     this.panelDimensions = { width: 0, height: 0 }
-    this.panelAlign = 'right';
-    this.revealDirection = 'right';
     this.windowDimensions = { width: 0, height: 0 }
+
+    this.panelAlign = this.getProp('align', 'right');
+    this.revealDirection = this.getProp('revealDirection', this.panelAlign);
+    this.revealType = this.getProp('revealType', 'none');
 
     /**
      * Animējamie elementi
@@ -54,6 +51,12 @@ function panel(name, $el, props) {
     }
 
     //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
+
+    /**
+     * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
+     * Jāvar darboties arī, ja ir padots native dom elements
+     */
+    this.el = this.prepareEl($el.get(0));
 
     this.setEvents();
 }
@@ -94,7 +97,7 @@ panel.prototype = {
     prepareEl: function(el) {
 
         // Default align: right
-        addCssClass(el, 'modal-panel--'+this.getAlign())
+        addCssClass(el, 'modal-panel--'+this.panelAlign)
 
         return el;
     },
@@ -134,20 +137,6 @@ panel.prototype = {
         }
 
         return defaultValue
-    },
-
-    /**
-     * Paneļa novietojums
-     */
-    getAlign: function() {
-        return this.getProp('align', 'right');
-    },
-
-    /**
-     * Virziens, no kura panelis tiek iebīdīts ekrānā
-     */
-    getRevealDirection: function() {
-        return this.getProp('revealDirection', this.getAlign());
     },
 
     /**
@@ -195,18 +184,26 @@ panel.prototype = {
     },
 
     applyProgress: function(progress) {
-        this.setXYOffset(
-            calcPanelXYOffsetByProgress(
-                this.panelAlign, 
-                this.revealDirection,
-                this.panelDimensions,
-                this.windowDimensions,
-                progress
+        if (this.revealType == 'slide') {
+            this.setXYOffset(
+                calcPanelXYOffsetByProgress(
+                    this.panelAlign, 
+                    this.revealDirection,
+                    this.panelDimensions,
+                    this.windowDimensions,
+                    progress
+                )
             )
-        );
+        }
+        else if (this.revealType == 'fade') {
+            this.setAnimableElementsStyle({
+                opacity: 1*progress
+            })
+        }
     },
 
     setXYOffset: function(offset) {
+        console.log(offset.y);
         this.setAnimableElementsStyle({
             transform: 'translate3d('+offset.x+'px,'+offset.y+'px,0)'
         })
@@ -247,8 +244,10 @@ panel.prototype = {
             width: this.getWidth(this.windowDimensions),
             height: this.getHeight(this.windowDimensions)
         };
-        this.panelAlign = this.getAlign();
-        this.revealDirection = this.getRevealDirection();
+        
+        this.panelAlign = this.getProp('align', 'right');
+        this.revealDirection = this.getProp('revealDirection', this.panelAlign);
+        this.revealType = this.getProp('revealType', 'none');
         
 
         this.setWidth(this.panelDimensions.width);
