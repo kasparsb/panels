@@ -2,6 +2,7 @@ Panel
     reveal type
         slide
         fade - opacity
+        none
     reveal direction (no kuras puses)
         right
         top - šeit jāčeko izmērs, ja tas ir augstāks kā window, tad nākot iekšā paneļa apakša būs jau redzama
@@ -13,7 +14,7 @@ Panel
 Panel show callback
     applyProgress
         te vajag dabūt overlay istanci
-        un body instaci - tas ir iekadrētais body gabals
+        DONE un body instaci - tas ir iekadrētais body gabals
 
 
 
