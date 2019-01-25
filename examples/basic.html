@@ -21,7 +21,7 @@
         width: 50%;
         top: 40px;
 
-        z-index: 1
+        z-index: 10
     }
     .log {
         position: fixed;
@@ -103,6 +103,9 @@
 
         <section class="modal-panel__content">
             <!--div class="input" style="background: red;height: 70px" contenteditable="true"></div-->
+            asdfadsf<br />
+            asdfadsf<br />
+            asdfadsf<br />
         </section>
         
     </div>
@@ -147,17 +150,24 @@
             webit.panels.init();
 
             webit.panels.register('basic1', $('.panel1'), {
-                align: 'right',
-                revealDirection: 'bottom',
+                align: 'left',
+                revealFrom: 'bottom',
+                revealType: 'slide',
+
+                animDurations: {
+                    panel: 400,
+                    overlay: 400
+                },
                 
                 width: function(viewportDimensions){
-                    return Math.min(viewportDimensions.width, 200)
+                    //return Math.min(viewportDimensions.width, 200)
+                    return viewportDimensions.width/2
                 }
             })
 
             webit.panels.register('basic2', $('.panel2'), {
-                align: 'left',
-                revealDirection: 'top',
+                align: 'right top',
+                revealFrom: 'top',
                 revealType: 'none',
 
                 zIndex: {
@@ -176,7 +186,8 @@
                 
                 
                 width: function(viewportDimensions){
-                    return Math.min(viewportDimensions.width, 500)
+                    return 200
+                    //return Math.min(viewportDimensions.width, 500)
                 },
                 height: 200,
 
@@ -203,7 +214,7 @@
                 ev.preventDefault();
                 
                 webit.panels.show('basic1', {
-                    showOverlay: false
+                    //showOverlay: false
                 });
             })
 
