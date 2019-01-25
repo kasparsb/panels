@@ -19,7 +19,7 @@
         position: fixed;
         left: 10px;
         width: 50%;
-        top: 10px;
+        top: 40px;
 
         z-index: 1
     }
@@ -54,6 +54,10 @@
         border: none;
         border: 1px solid silver;
         margin: 4px 0;
+    }
+
+    .app-w {
+        background: #fff
     }
     </style>
 
@@ -145,10 +149,7 @@
             webit.panels.register('basic1', $('.panel1'), {
                 align: 'right',
                 revealDirection: 'bottom',
-                animDurations: {
-                    overlay: 900,
-                    panel: 200
-                },
+                
                 width: function(viewportDimensions){
                     return Math.min(viewportDimensions.width, 200)
                 }
@@ -157,14 +158,22 @@
             webit.panels.register('basic2', $('.panel2'), {
                 align: 'left',
                 revealDirection: 'top',
+                revealType: 'none',
 
-                showOverlay: true,
+                zIndex: {
+                    bodyFrame: 3,
+                    panel: 2,
+                    overlay:1 
+                },
+
+                showOverlay: false,
                 hideOnOutsideClick: true,
                 
                 animDurations: {
-                    overlay: 900,
                     panel: 200
                 },
+
+                
                 
                 width: function(viewportDimensions){
                     return Math.min(viewportDimensions.width, 500)
@@ -177,9 +186,9 @@
                         transform: 'scale('+(1 - (0.3*progress))+')'
                     })
 
-                    panel.setAnimableElementsStyle({
-                        'opacity': progress
-                    });
+                    // panel.setAnimableElementsStyle({
+                    //     'opacity': progress
+                    // });
                     
                     applyProgress(progress)
                 }
@@ -220,10 +229,10 @@
                 //$('[name=input2]').focus();
                 
                 webit.panels.show('basic2', {
-                    animDurations: {
-                        overlay: 500,
-                        panel: 100    
-                    }
+                    // animDurations: {
+                    //     overlay: 500,
+                    //     panel: 100    
+                    // }
                 });
             })
 
