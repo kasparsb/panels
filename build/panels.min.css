@@ -12,7 +12,7 @@
      * vairāk vietas ekrāna augstumā un overlay izskatas, ka sašaurinās
      */
   height: 120%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.1);
   display: none;
   opacity: 0;
   z-index: 1000;
@@ -49,6 +49,20 @@
      * Šis ir fixed, lai uz ios taisot overscroll tas stāvētu uz vietas
      * uz iOS 7 - iet līdzi un nestāv uz vietas
      */
+  /**
+    &--left &__bg,
+    &--left &__header,
+    &--left &__footer,
+    &--left &__content {
+        left: 0;
+    }
+    &--right &__bg,
+    &--right &__header,
+    &--right &__footer,
+    &--right &__content {
+        right: 0;
+    }
+    */
 }
 .modal-panel--visible {
   display: block;
@@ -95,18 +109,6 @@
 .modal-panel__footer {
   position: absolute;
   bottom: 0;
-}
-.modal-panel--left .modal-panel__bg,
-.modal-panel--left .modal-panel__header,
-.modal-panel--left .modal-panel__footer,
-.modal-panel--left .modal-panel__content {
-  left: 0;
-}
-.modal-panel--right .modal-panel__bg,
-.modal-panel--right .modal-panel__header,
-.modal-panel--right .modal-panel__footer,
-.modal-panel--right .modal-panel__content {
-  right: 0;
 }
 .modal-panel__close {
   position: absolute;
