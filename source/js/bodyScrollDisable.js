@@ -47,5 +47,10 @@ module.exports = {
             },
             el: appContainer
         }
+    },
+    setZIndex: function(i) {
+        addStyle(appContainer, {
+            zIndex: i
+        })
     }
 }

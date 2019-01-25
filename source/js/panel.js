@@ -56,7 +56,7 @@ function panel(name, $el, props) {
      * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
      * Jāvar darboties arī, ja ir padots native dom elements
      */
-    this.el = this.prepareEl($el.get(0));
+    this.el = this.prepareEl(this.$el.get(0));
 
     this.setEvents();
 }
@@ -236,6 +236,12 @@ panel.prototype = {
         else {
             addStyle(this.animableElements.bg, {height: height+'px'})
         }
+    },
+
+    setZIndex: function(i) {
+        addStyle(this.el, {
+            zIndex: i
+        })
     },
 
     beforeShow: function() {

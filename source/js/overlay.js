@@ -1,3 +1,4 @@
+var addStyle = require('./addStyle');
 var addCssClass = require('./addCssClass');
 var removeCssClass = require('./removeCssClass');
 
@@ -53,5 +54,10 @@ module.exports = {
     isVisible: isVisible,
     getProgress: function() {
         return currentProgress
+    },
+    setZIndex: function(i) {
+        addStyle(el, {
+            zIndex: i
+        })
     }
 }
