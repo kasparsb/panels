@@ -5,14 +5,16 @@ var removeCssClass = require('./removeCssClass');
 var addStyle = require('./addStyle');
 var getWindowDimensions = require('./getWindowDimensions');
 var calcPanelXYOffsetByProgress = require('./calcPanelXYOffsetByProgress');
+var calcAlignXY = require('./calcAlignXY');
 var domEvents = require('./domEvents');
 var eventTarget = require('./eventTarget');
+var panelGetProp = require('./panelGetProp');
+var solveValue = require('./solveValue');
 
 function panel(name, $el, props) {
 
     this.closeCb = undefined;
     this.beforeShowCb = undefined;
-    this.applyProgressCb = undefined;
 
     this.hideInProgress = false;
 
@@ -36,9 +38,10 @@ function panel(name, $el, props) {
     this.panelDimensions = { width: 0, height: 0 }
     this.windowDimensions = { width: 0, height: 0 }
 
-    this.panelAlign = this.getProp('align', 'right');
-    this.revealDirection = this.getProp('revealDirection', this.panelAlign);
-    this.revealType = this.getProp('revealType', 'none');
+    // Šie tiek definēti beforeShow
+    this.align;
+    this.revealFrom;
+    this.revealType;
 
     /**
      * Animējamie elementi
@@ -56,7 +59,7 @@ function panel(name, $el, props) {
      * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
      * Jāvar darboties arī, ja ir padots native dom elements
      */
-    this.el = this.prepareEl(this.$el.get(0));
+    this.el = this.$el.get(0);
 
     this.setEvents();
 }
@@ -93,15 +96,6 @@ panel.prototype = {
             }
         })
     },
-
-    prepareEl: function(el) {
-
-        // Default align: right
-        addCssClass(el, 'modal-panel--'+this.panelAlign)
-
-        return el;
-    },
-
     
     /**
      * @todo Jāpārdomā vai šo tiešām vajag, jo šis pārtrauc onClick eventu
@@ -124,49 +118,21 @@ panel.prototype = {
     },
 
     getProp: function(name, defaultValue) {
-        // Override props. Šos skatamies pirmos
-        if (this.props2) {
-            if (typeof this.props2[name] != 'undefined') {
-                return this.props2[name];
-            }
-        }       
-
-        // Default props, kuri uzlikti konstruktora laikā
-        if (typeof this.props[name] != 'undefined') {
-            return this.props[name]
-        }
-
-        return defaultValue
+        return panelGetProp(this.props, this.props2, name, defaultValue);
     },
 
     /**
      * Get width ir konfigurējams no props
      */
     getWidth: function(viewportDimensions) {
-        var width = this.getProp('width', 320);
-
-        switch (typeof width) {
-            // Width var nodefinēt kā funkciju
-            case 'function':
-                return width(viewportDimensions);
-            default:
-                return width;
-        }
+        return solveValue(this.getProp('width', 320), [viewportDimensions]);
     },
 
     /**
      * Get width ir konfigurējams no props
      */
     getHeight: function(viewportDimensions) {
-        var height = this.getProp('height', viewportDimensions.height);
-
-        switch (typeof height) {
-            // Width var nodefinēt kā funkciju
-            case 'function':
-                return height(viewportDimensions);
-            default:
-                return height;
-        }
+        return solveValue(this.getProp('height', viewportDimensions.height), [viewportDimensions]);
     },
 
     setAnimableElementsStyle: function(cssProps) {
@@ -187,8 +153,8 @@ panel.prototype = {
         if (this.revealType == 'slide') {
             this.setXYOffset(
                 calcPanelXYOffsetByProgress(
-                    this.panelAlign, 
-                    this.revealDirection,
+                    this.align, 
+                    this.revealFrom,
                     this.panelDimensions,
                     this.windowDimensions,
                     progress
@@ -196,16 +162,22 @@ panel.prototype = {
             )
         }
         else if (this.revealType == 'fade') {
-            this.setAnimableElementsStyle({
-                opacity: 1*progress
-            })
+            this.setOpacity(1*progress)
         }
     },
 
+    /**
+     * Priekš slide animācijas
+     */
     setXYOffset: function(offset) {
-        console.log(offset.y);
         this.setAnimableElementsStyle({
             transform: 'translate3d('+offset.x+'px,'+offset.y+'px,0)'
+        })
+    },
+
+    setOpacity: function(opacity) {
+        this.setAnimableElementsStyle({
+            opacity: opacity
         })
     },
 
@@ -244,6 +216,17 @@ panel.prototype = {
         })
     },
 
+    setPosition: function() {
+        this.setAnimableElementsStyle({
+            left: this.align.x+'px'
+
+            /**
+             * @todo Pašlaik ar vertical align nestrādājam, tikai horizontal
+             */
+            //,top: this.align.y+'px'
+        });
+    },
+
     beforeShow: function() {
         this.windowDimensions = getWindowDimensions();
         this.panelDimensions = {
@@ -251,11 +234,11 @@ panel.prototype = {
             height: this.getHeight(this.windowDimensions)
         };
         
-        this.panelAlign = this.getProp('align', 'right');
-        this.revealDirection = this.getProp('revealDirection', this.panelAlign);
+        this.align = calcAlignXY(this.getProp('align', 'left top'), this.panelDimensions, this.windowDimensions);
+        this.revealFrom = this.getProp('revealFrom', 'left');
         this.revealType = this.getProp('revealType', 'none');
         
-
+        this.setPosition();
         this.setWidth(this.panelDimensions.width);
         this.setHeight(this.panelDimensions.height);
         this.applyProgress(0);
@@ -316,10 +299,6 @@ panel.prototype = {
 
     onClose: function(cb) {
         this.closeCb = cb
-    },
-
-    onApplyProgress: function(cb) {
-        this.applyProgressCb = cb
     },
 
     onBeforeShow: function(cb) {

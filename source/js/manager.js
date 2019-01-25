@@ -4,10 +4,6 @@ var Overlay = require('./overlay');
 var Panel = require('./panel');
 var fireCallbacks = require('./fireCallbacks');
 var propPushToArray = require('./propPushToArray');
-var getData = require('./getData');
-var validateAnimDurations = require('./validateAnimDurations');
-var validateZIndex = require('./validateZIndex');
-
 
 var Step, OverlayStep, panels = {}, 
     needToShowOverlay = true, needToHideOverlay = true, 
@@ -46,10 +42,12 @@ function setPanelEvents(Panel) {
     Panel.onClose(function(){
         handlePanelHide(Panel)
     })
+}
 
-    Panel.onApplyProgress(function(){
-        
-    })
+function setZIndex(zIndex, panel) {
+    BodyScroll.setZIndex(zIndex.bodyFrame);
+    Overlay.setZIndex(zIndex.overlay);
+    panel.setZIndex(zIndex.panel);
 }
 
 function handlePanelShow(Panel, config) {
@@ -126,19 +124,11 @@ function panelAfterHide(panel) {
 }
 
 function showPanel(panel, config) {
-
     panel.setOverrideProps(config);
 
-    var zIndex = validateZIndex(panel.getProp('zIndex'));
+    setZIndex(panel.getProp('zIndex'), panel);
 
-    
-    BodyScroll.setZIndex(zIndex.bodyFrame);
-    Overlay.setZIndex(zIndex.overlay);
-    panel.setZIndex(zIndex.panel);
-
-
-
-    var animDurations = validateAnimDurations(panel.getProp('animDurations'));
+    var animDurations = panel.getProp('animDurations');
     var showOverlay = panel.getProp('showOverlay', true);
 
     // Iepriekšējo paneli, ja tāds ir, disable
@@ -204,7 +194,7 @@ function showPanel(panel, config) {
 
 function hidePanel(panel, config) {
     panel.setOverrideProps(config);
-    var animDurations = validateAnimDurations(panel.getProp('animDurations'));
+    var animDurations = panel.getProp('animDurations');
 
     var done = function() {
         if (OverlayStep.isRunning() || Step.isRunning()) {

@@ -1,73 +1,39 @@
-function calcPanelXYOffsetByProgress(align, revealDirection, panelDimensions, viewportDimensions, progress) {
-    if (typeof method[align+revealDirection] != 'undefined') {
-        return method[align+revealDirection](panelDimensions, viewportDimensions, progress)
-    }
-
-    return {
-        x: 0,
-        y: 0
-    }
-}
-
 /**
- * Visas dažādās align + revealDirection metodes
+ * Te ir jārēķina offset no tekošās paneļa pozīcijas (align.x un align.y)
+ * Progresa beigās panel ir jānostājas savā align vietā. Tātad x un y jābūt 0
+ * Progresa sākumā jāaprēķina tas attālums, lai paneli novietotu vajadzīgajā starta vietā
  */
-var method = {
-    leftleft: function(pd, vd, p) {
+function calcPanelXYOffsetByProgress(align, revealFrom, panelDimensions, viewportDimensions, progress) {
+
+    if (revealFrom == 'right') {
+        /**
+         * start pozīcija: tā lai paneļa x ir aiz viewport labās puses
+         * (viewportDimensions.width - align.x) - šis ir tas lielums, kādu jāpieliek esošajai
+         * align.x pozīcjai, lai izbīdītu ārpus viewport
+         * beigu pozīcijā šai vērtībai (viewportDimensions.width - align.x) jābūt 0
+         */
         return {
-            x: -(pd.width - pd.width * p),
+            x: (viewportDimensions.width - align.x) - ((viewportDimensions.width - align.x)*progress),
             y: 0
         }
-    },
-    
-    leftright: function(pd, vd, p) {
+    }
+    else if (revealFrom == 'left') {
         return {
-            x: vd.width - vd.width * p,
+            x: -((align.x + panelDimensions.width) - ((align.x + panelDimensions.width)*progress)),
             y: 0
         }
-    },
-
-    lefttop: function(pd, vd, p) {
+    }
+    else if (revealFrom == 'top') {
         return {
             x: 0,
-            y: -(pd.height - pd.height * p)
+            y: -((align.y + panelDimensions.height) - ((align.y + panelDimensions.height)*progress))
         }
-    },
-
-    leftbottom: function(pd, vd, p) {
+    }
+    else if (revealFrom == 'bottom') {
         return {
             x: 0,
-            y: vd.height - vd.height * p
-        }
-    },
-
-
-    rightright: function(pd, vd, p) {
-        return {
-            x: pd.width - pd.width * p,
-            y: 0
-        }
-    },
-
-    rightleft: function(pd, vd, p) {
-        return {
-            x: -((vd.width + pd.width) - (vd.width + pd.width) * p),
-            y: 0
-        }
-    },
-
-    righttop: function(pd, vd, p) {
-        return {
-            x: 0,
-            y: -(pd.height - pd.height * p)
-        }
-    },
-
-    rightbottom: function(pd, vd, p) {
-        return {
-            x: 0,
-            y: vd.height - vd.height * p
-        }
+            y: (viewportDimensions.height - align.y) - ((viewportDimensions.height - align.y)*progress)
+        }   
     }
 }
 
