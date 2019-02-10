@@ -15,6 +15,7 @@ module.exports = {
     get: Manager.getPanel,
     show: Manager.showPanel,
     hide: Manager.hidePanel,
+    isOpen: Manager.isOpen,
 
     onHide: Manager.onHide
 }

@@ -323,6 +323,9 @@ module.exports = {
     hidePanel: function(panelName, props) {
         handlePanelHide(getPanel(panelName), props)
     },
+    isOpen: function(panelName) {
+        return getPanel(panelName).isOpen;
+    },
 
     hideAll: hideAll,
 
