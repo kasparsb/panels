@@ -5,6 +5,10 @@ var Panel = require('./panel');
 var fireCallbacks = require('./fireCallbacks');
 var propPushToArray = require('./propPushToArray');
 
+// function getScrollbarWidth() {
+//   return window.innerWidth - document.documentElement.clientWidth;
+// }
+
 var Step, OverlayStep, panels = {}, 
     needToShowOverlay = true, needToHideOverlay = true, 
     openPanelsCount = 0, openPanelsStack = []
@@ -14,8 +18,12 @@ var Step, OverlayStep, panels = {},
     };
 
 function init() {
-    Step = new Stepper();
-    OverlayStep = new Stepper();
+    Step = new Stepper({
+        bezierCurve: [0.455, 0.03, 0.515, 0.955]
+    });
+    OverlayStep = new Stepper({
+        bezierCurve: [0.455, 0.03, 0.515, 0.955]
+    });
 }
 
 function registerPanel(name, $el, props) {
@@ -144,11 +152,12 @@ function showPanel(panel, config) {
             Overlay.applyProgress(1)
         }
         else {
-            OverlayStep.run(animDurations.overlay, [0.455, 0.03, 0.515, 0.955],
-                function(p){
+            OverlayStep.run({
+                duration: animDurations.overlay,
+                onStep: function(p){
                     Overlay.applyProgress(p)
                 }
-            )    
+            })
         }
         
     }
@@ -165,31 +174,29 @@ function showPanel(panel, config) {
 
         var applyProgressCb = createPanelApplyProgressCallback(panel);
 
-        setTimeout(function(){
-            Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955],
-                function(p){
+        Step.run({
+            duration: animDurations.panel,
+            onStep: function(p){
 
-                    applyProgressCb(
-                        panel, 
-                        p, 
-                        function(p){
-                            panel.applyProgress(p)
-                        },
-                        BodyScroll.getEl()
-                    )
+                applyProgressCb(
+                    panel, 
+                    p, 
+                    function(p){
+                        panel.applyProgress(p)
+                    },
+                    BodyScroll.getEl()
+                )
 
-                }, 
-                function(){
-                    if (panel.showPanelDone) {
-                        panel.showPanelDone()
-                    }
-
-                    panel.setOverrideProps(null);
+            }, 
+            onDone: function(){
+                if (panel.showPanelDone) {
+                    panel.showPanelDone()
                 }
-            )
-        }, 140)
+
+                panel.setOverrideProps(null);
+            }
+        })
     }
-    
 }
 
 function hidePanel(panel, config) {
@@ -214,14 +221,15 @@ function hidePanel(panel, config) {
             Overlay.applyProgress(0);
         }
         else {
-            OverlayStep.run(animDurations.overlay, [0.455, 0.03, 0.515, 0.955],
-                function(p){
+            OverlayStep.run({
+                duration: animDurations.overlay,
+                onStep: function(p){
                     if (Overlay.getProgress() >= (1-p)) {
                         Overlay.applyProgress(1-p)
                     }
                 },
-                done
-            )
+                onDone: done
+            })
         }        
     }
 
@@ -233,8 +241,9 @@ function hidePanel(panel, config) {
     else {
         var applyProgressCb = createPanelApplyProgressCallback(panel);
 
-        Step.run(animDurations.panel, [0.455, 0.03, 0.515, 0.955], 
-            function(p){
+        Step.run({
+            duration: animDurations.panel,
+            onStep: function(p){
                 
                 // Padodam panel, progress, default applyProgress metodi, kura ir obligāti
                 // jāizsauc no custom applyProgress funkcijas
@@ -247,8 +256,8 @@ function hidePanel(panel, config) {
                     BodyScroll.getEl()
                 )
             }, 
-            done
-        )    
+            onDone: done
+        })
     }
     
 }
