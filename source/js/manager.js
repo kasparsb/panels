@@ -59,6 +59,10 @@ function setZIndex(zIndex, panel) {
 }
 
 function handlePanelShow(Panel, config) {
+    if (Panel.isOpen) {
+        return;
+    }
+
     showPanel(Panel, config);
 }
 
@@ -66,6 +70,10 @@ function handlePanelShow(Panel, config) {
  * Panel hide event
  */
 function handlePanelHide(Panel, config) {
+
+    if (!Panel.isOpen) {
+        return;
+    }
 
     if (Panel.hideInProgress) {
         return;

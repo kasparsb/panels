@@ -13,6 +13,8 @@ var solveValue = require('./solveValue');
 
 function panel(name, $el, props) {
 
+    this.isOpen = false;
+
     this.closeCb = undefined;
     this.beforeShowCb = undefined;
 
@@ -228,6 +230,8 @@ panel.prototype = {
     },
 
     beforeShow: function() {
+        this.isOpen = true;
+
         this.windowDimensions = getWindowDimensions();
         this.panelDimensions = {
             width: this.getWidth(this.windowDimensions),
@@ -287,6 +291,8 @@ panel.prototype = {
         removeCssClass(this.el, 'modal-panel--visible');
 
         this.hideInProgress = false;
+
+        this.isOpen = false;
     },
 
     disable: function() {
