@@ -247,7 +247,9 @@
                 });
             })
 
-
+            setInterval(function(){
+                console.log('basic1, basic2 is open', webit.panels.isOpen('basic1'), webit.panels.isOpen('basic2'));
+            }, 8000)
         }
     </script>
 
