@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
+    <title>Basic</title>
+    
+    <style>
+    html, body {
+        padding: 0;
+        margin: 0;
+    }
+    
+
+    button {
+        margin-top: 14px;
+        width: 140px;
+        display: block;
+        background: none;
+        border: none;
+        background-color: #28c128;
+        padding: 12px 20px;
+        color: #000;
+        border-radius: 4px;
+        font-weight: bold;
+        
+        -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+    .app-w {
+        background: #fff
+    }
+    </style>
+
+</head>
+<body>
+    <div class="modal-panel panel1">
+        <div class="modal-panel__bg"></div>
+
+        <header class="modal-panel__header">
+            <a href="" class="modal-panel__close">&times;</a>
+            <h4 class="modal-panel__heading">Heading</h4>
+        </header>
+
+        <section class="modal-panel__content">
+            <div>
+                contentsdfsdf<br />
+                sdfsagdfgdfgdfsdf<br />
+                sdfsdfsdf<br />
+                contentsdfsdf<br />
+                sdfsagdfgdfgdfsdf<br />
+                sdfsdfsdf<br />
+                contentsdfsdf<br />
+                sdfsagdfgdfgdfsdf<br />
+                sdfsdfsdf<br />
+                sdfsagdfgdfgdfsdf<br />
+                sdfsdfsdf<br />
+                contentsdfsdf<br />
+                sdfsagdfgdfgdfsdf<br />
+                sdfsdfsdf<br />
+            </div>
+        </section>
+    </div>
+
+    <div class="controls">
+        <button type="button" name="open-panel1">Open panel 1</button>
+    </div>
+    
+    <div class="log"></div>
+
+    <div class="app-w">
+        <div class="app">
+            <div class="r">1</div>
+            <div class="r">2</div>
+            <div class="r">3</div>
+            <div class="r">4</div>
+            <div class="r">5</div>
+            <div class="r">6</div>
+            <div class="r">7</div>
+            <div class="r">8</div>
+            <div class="r">9</div>
+            <div class="r">10</div>
+            <div class="r">11</div>
+            <div class="r">12</div>
+            <div class="r">13</div>
+            <div class="r">14</div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        
+    <script>
+        function init($){
+
+            webit.panels.init();
+
+            webit.panels.register('basic1', $('.panel1'), {
+                align: 'center center',
+                revealType: 'fade',
+                animDurations: {
+                    panel: 200,
+                    overlay: 200
+                },
+                
+                width: function(viewportDimensions){
+                    //return Math.min(viewportDimensions.width, 200)
+                    return viewportDimensions.width/2
+                },
+
+                height: function(viewportDimensions){
+                    //return Math.min(viewportDimensions.width, 200)
+                    return viewportDimensions.height/2
+                }
+            })
+
+            $(document).on('click', '[name=open-panel1]', function(ev){
+                ev.preventDefault();
+                
+                webit.panels.show('basic1', {
+                    //showOverlay: false
+                });
+            })
+        }
+    </script>
+
+    <script>
+        (function(d){
+            var s = d.createElement('link');
+            d.getElementsByTagName('head')[0].appendChild(s);
+            s.setAttribute('type', 'text/css');
+            s.setAttribute('rel', 'stylesheet');
+            s.setAttribute('href', '../build/panels.min.css?v='+(new Date()).getTime());
+
+            
+            var s = d.createElement('script');
+            d.getElementsByTagName('head')[0].appendChild(s);
+            s.src = '../build/panels.min.js?v='+(new Date()).getTime();
+            s.onload = function(){
+                init(jQuery)
+            }
+            s.onreadystatechange= function () {
+                if (this.readyState == 'complete') {
+                    init(jQuery)
+                }
+           }
+        })(document)
+    </script>
+</body>
+</html>
