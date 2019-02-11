@@ -220,7 +220,8 @@ panel.prototype = {
 
     setPosition: function() {
         this.setAnimableElementsStyle({
-            left: this.align.x+'px'
+            left: this.align.x+'px',
+            top: this.align.y+'px'
 
             /**
              * @todo Pašlaik ar vertical align nestrādājam, tikai horizontal
