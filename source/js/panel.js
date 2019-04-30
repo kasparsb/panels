@@ -10,6 +10,7 @@ var domEvents = require('./domEvents');
 var eventTarget = require('./eventTarget');
 var panelGetProp = require('./panelGetProp');
 var solveValue = require('./solveValue');
+var isPanelCloseButton = require('./isPanelCloseButton');
 
 function panel(name, $el, props) {
 
@@ -80,7 +81,7 @@ panel.prototype = {
                     closePanel = true;
                 }
             }
-            else if (hasCssClass(el, 'modal-panel__close')) {
+            else if (isPanelCloseButton(el)) {
                 /**
                  * Reaģējam uz panelī definēto close pogu
                  * closeCb nāk no panelsManager, kura šādā 
