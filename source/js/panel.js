@@ -11,6 +11,7 @@ var eventTarget = require('./eventTarget');
 var panelGetProp = require('./panelGetProp');
 var solveValue = require('./solveValue');
 var isPanelCloseButton = require('./isPanelCloseButton');
+var getElementOuterDimensions = require('./getElementOuterDimensions');
 
 function panel(name, $el, props) {
 
@@ -138,17 +139,14 @@ panel.prototype = {
         return solveValue(this.getProp('height', viewportDimensions.height), [viewportDimensions]);
     },
 
-    setAnimableElementsStyle: function(cssProps) {
-        for (var n in this.animableElements) {
-            if (!this.animableElements.hasOwnProperty(n)) {
-                continue;
-            }
-            
-            if (!this.animableElements[n]) {
-                continue;
-            }
-            
-            addStyle(this.animableElements[n], cssProps);
+    setAnimableElementsStyle: function(cssProps, items) {
+
+        if (typeof items == 'undefined') {
+            items = ['bg', 'header', 'footer', 'content'];
+        }
+
+        for (var i = 0; i < items.length; i++) {
+            addStyle(this.animableElements[items[i]], cssProps);
         }
     },
 
@@ -223,12 +221,34 @@ panel.prototype = {
         this.setAnimableElementsStyle({
             left: this.align.x+'px',
             top: this.align.y+'px'
+        }, [
+            // Visam izņemot footer
+            'bg', 'header', 'content'
+        ]);
+    },
 
-            /**
-             * @todo Pašlaik ar vertical align nestrādājam, tikai horizontal
-             */
-            //,top: this.align.y+'px'
-        });
+    /**
+     * Footer ir jāpozicionē pret panel apakšu
+     * Šeit vajag zināt, kādi ir panel izmēri
+     *
+     * Vēl vajag zināt kāds ir footer augstums, bet 
+     * kamēr panelis display:none footer augstums nav zināms
+     */
+    setFooterPosition: function(panelWidth, panelHeight) {
+        if (!this.animableElements.footer) {
+            return
+        }
+
+        // Footer vajag pozicionēt pret panel apakšu
+        var dimensions = getElementOuterDimensions(this.animableElements.footer);
+
+        this.setAnimableElementsStyle({
+            left: this.align.x+'px',
+            top: (this.align.y + panelHeight - dimensions.height)+'px'
+        }, [
+            // Tikai footer
+            'footer'
+        ]);
     },
 
     beforeShow: function() {
@@ -250,6 +270,14 @@ panel.prototype = {
         this.applyProgress(0);
 
         addCssClass(this.el, 'modal-panel--visible');
+        
+        
+        /**
+         * @todo Iespējams, ka vajag pārtiasīt, lai footer ir relatīvs pret content container
+         * Pašlaik footer tiek poziconēts ar top, jo tas ie neatkarīgi no panel izmēriem
+         */
+        this.setFooterPosition(this.panelDimensions.width, this.panelDimensions.height);
+
 
         /**
          * iOS fix, ja neuzliek transform, tad skrollējot raustīsies fixed header

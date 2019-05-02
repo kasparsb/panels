@@ -75,10 +75,22 @@
         border-bottom: 1px solid @modalPanelZoningColor;
 
         background: #fff;
+    }
 
+    &__footer {        
+        /** Pozicionēšana notiek no js */
+
+        height: @modalPanelFooterHeight;
+        background: #fff;
+    }
+
+    &__header,
+    &__footer {
+        /** Fixed: iOS gadījumā, lai stāv */
+        position: fixed;
         z-index: 100;
     }
-    
+
     &__content {
         position: absolute;
         z-index: 90;
@@ -91,10 +103,9 @@
         padding-top: @modalPanelHeaderHeight + 1px;
     }
 
-    &__footer {
-        position: absolute;
-        
-        bottom: 0;
+    &--footer &__content {
+        /** Atbrīvojam vietu priekš footer */
+        padding-bottom: @modalPanelFooterHeight;
     }
 
 
