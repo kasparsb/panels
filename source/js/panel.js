@@ -69,7 +69,13 @@ function panel(name, el, props) {
     }
 
     // Ja ir footer, tad pieliekam klasi
-    addCssClass(this.el, 'modal-panel--footer');
+    if (this.animableElements.footer) {
+        addCssClass(this.el, 'modal-panel--footer');
+    }
+    else {
+        removeCssClass(this.el, 'modal-panel--footer');
+    }
+    
 
     //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
 
