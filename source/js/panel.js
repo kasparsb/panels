@@ -12,8 +12,9 @@ var panelGetProp = require('./panelGetProp');
 var solveValue = require('./solveValue');
 var isPanelCloseButton = require('./isPanelCloseButton');
 var getElementOuterDimensions = require('./getElementOuterDimensions');
+var isjQuery = require('./isjQuery');
 
-function panel(name, $el, props) {
+function panel(name, el, props) {
 
     this.isOpen = false;
 
@@ -32,8 +33,6 @@ function panel(name, $el, props) {
      */
     this.props2 = undefined;
 
-    this.$el = $el;
-
     /**
      * Paneļa platums. Šis tiek ņemts no props.width
      * Ar šo mainīgo width tiek iekešots un tiek ielasīts
@@ -48,22 +47,31 @@ function panel(name, $el, props) {
     this.revealType;
 
     /**
-     * Animējamie elementi
-     */
-    this.animableElements = {
-        'bg': $el.find('.modal-panel__bg').get(0),
-        'header': $el.find('.modal-panel__header').get(0),
-        'footer': $el.find('.modal-panel__footer').get(0),
-        'content': $el.find('.modal-panel__content').get(0)
-    }
-
-    //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
-
-    /**
      * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
      * Jāvar darboties arī, ja ir padots native dom elements
      */
-    this.el = this.$el.get(0);
+    if (isjQuery(el)) {
+        this.el = el.get(0);
+    }
+    else {
+        this.el = el;
+    }
+    
+
+    /**
+     * Animējamie elementi
+     */
+    this.animableElements = {
+        'bg': this.el.querySelector('.modal-panel__bg'),
+        'header': this.el.querySelector('.modal-panel__header'),
+        'footer': this.el.querySelector('.modal-panel__footer'),
+        'content': this.el.querySelector('.modal-panel__content')
+    }
+
+    // Ja ir footer, tad pieliekam klasi
+    addCssClass(this.el, 'modal-panel--footer');
+
+    //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
 
     this.setEvents();
 }
@@ -146,7 +154,9 @@ panel.prototype = {
         }
 
         for (var i = 0; i < items.length; i++) {
-            addStyle(this.animableElements[items[i]], cssProps);
+            if (this.animableElements[items[i]]) {
+                addStyle(this.animableElements[items[i]], cssProps);
+            }
         }
     },
 

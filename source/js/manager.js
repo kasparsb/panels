@@ -19,7 +19,7 @@ var Step, OverlayStep, panels = {},
 
 function init() {
     Step = new Stepper({
-        bezierCurve: [0.455, 0.03, 0.515, 0.955]
+        bezierCurve: [0.075, 0.82, 0.165, 1]
     });
     OverlayStep = new Stepper({
         bezierCurve: [0.455, 0.03, 0.515, 0.955]
