@@ -279,7 +279,13 @@ panel.prototype = {
         this.setHeight(this.panelDimensions.height);
         this.applyProgress(0);
 
+        /**
+         * @todo addCssClass rada bremzi un Stepper pirmais solis izpildās daudz reiz vēlāk
+         * nekā, ja netiek izmantots addCssClass
+         * Tā kā --visible uzstāda tikai display:block, tad lieka to caur style property
+         */ 
         addCssClass(this.el, 'modal-panel--visible');
+        //addStyle(this.el, {display: 'block'});
         
         
         /**
@@ -329,6 +335,7 @@ panel.prototype = {
 
     afterHide: function() {
         removeCssClass(this.el, 'modal-panel--visible');
+        //addStyle(this.el, {display: 'none'});
 
         this.hideInProgress = false;
 

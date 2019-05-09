@@ -12,19 +12,35 @@
      */
     position: absolute;
     top: 0;
+    
+    
+    /**
     left: 0;
     right: 0;
     bottom: 0;
-        
+    display: none;
+    */
+
+    /**
+     * Šādi taisām, jo uzlikt display block ir dārgi
+     * reveal animācija nedaudz iebrezē
+     */
+    left: -999999px;
+    width: 100%;
+    height: 100%;
+    display: block;
+
+
     z-index: @modalPanelZIndex;
     overflow: hidden;
-    display: none;
+
 
     &:extend(.modal-panel-remove-tap-highlite);
 
     /** Pirmā stadija, kad panelis ir redzams un pārklāj visu ekrānu */
     &--visible {
-        display: block;
+        /*display: block;*/
+        left: 0;
     }
 
     /** Animācija ir beigusies, liekam lai overflow ir scrolējam */
