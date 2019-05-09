@@ -1,5 +1,8 @@
 function isjQuery(obj) {
-    return obj instanceof jQuery;
+    if (obj && typeof obj.jquery != 'undefined') {
+        return true;
+    }
+    return false;
 }
 
 module.exports = isjQuery
