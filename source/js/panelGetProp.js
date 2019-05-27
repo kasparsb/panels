@@ -1,9 +1,22 @@
+var solveValue = require('./solveValue');
 var validateAnimDurations = require('./validateAnimDurations');
 var validateZIndex = require('./validateZIndex');
 var validateAlign = require('./validateAlign');
 
-function panelGetProp(props1, props2, name, defaultValue) {
-    
+/**
+ * Atgriežam property pēc tā name
+ * Katrs property var būt statiska vērtība vai ir funkcija, kuru izsaucot tiks atriezta vērtība
+ * @param object Set of default props
+ * @param object Set of override props
+ * @param string Property name
+ * @param string Default value ir property does not exists
+ * @param array Array of arguments to pass to propertu value if it is function
+ */
+function panelGetProp(props1, props2, name, defaultValue, args) {
+    if (typeof args == 'undefined') {
+        args = [];
+    }
+
     var r = defaultValue;
 
     // Override props. Šos skatamies pirmos
@@ -14,6 +27,16 @@ function panelGetProp(props1, props2, name, defaultValue) {
     else if (typeof props1[name] != 'undefined') {
         r = props1[name]
     }
+
+    // Solve property value
+    // If r is function it is executed to get value
+    if (name == 'applyProgress') {
+        // applyProgress vienmēr būs funkcija, tāpēc do not solveValue
+    }
+    else {
+        r = solveValue(r, args);
+    }
+    
 
     // Papildus apstrādes noteiktām props
     switch (name) {

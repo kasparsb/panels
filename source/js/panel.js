@@ -9,7 +9,7 @@ var calcAlignXY = require('./calcAlignXY');
 var domEvents = require('./domEvents');
 var eventTarget = require('./eventTarget');
 var panelGetProp = require('./panelGetProp');
-var solveValue = require('./solveValue');
+
 var isPanelCloseButton = require('./isPanelCloseButton');
 var getElementOuterDimensions = require('./getElementOuterDimensions');
 var isjQuery = require('./isjQuery');
@@ -135,22 +135,8 @@ panel.prototype = {
         this.props2 = props;
     },
 
-    getProp: function(name, defaultValue) {
-        return panelGetProp(this.props, this.props2, name, defaultValue);
-    },
-
-    /**
-     * Get width ir konfigurējams no props
-     */
-    getWidth: function(viewportDimensions) {
-        return solveValue(this.getProp('width', 320), [viewportDimensions]);
-    },
-
-    /**
-     * Get width ir konfigurējams no props
-     */
-    getHeight: function(viewportDimensions) {
-        return solveValue(this.getProp('height', viewportDimensions.height), [viewportDimensions]);
+    getProp: function(name, defaultValue, args) {
+        return panelGetProp(this.props, this.props2, name, defaultValue, args);
     },
 
     setAnimableElementsStyle: function(cssProps, items) {
@@ -271,14 +257,15 @@ panel.prototype = {
         this.isOpen = true;
 
         this.windowDimensions = getWindowDimensions();
+
         this.panelDimensions = {
-            width: this.getWidth(this.windowDimensions),
-            height: this.getHeight(this.windowDimensions)
+            width: this.getProp('width', 320, [this.windowDimensions]),
+            height: this.getProp('height', this.windowDimensions.height, [this.windowDimensions])
         };
         
-        this.align = calcAlignXY(this.getProp('align', 'left top'), this.panelDimensions, this.windowDimensions);
-        this.revealFrom = this.getProp('revealFrom', 'left');
-        this.revealType = this.getProp('revealType', 'none');
+        this.align = calcAlignXY(this.getProp('align', 'left top', [this.windowDimensions]), this.panelDimensions, this.windowDimensions);
+        this.revealFrom = this.getProp('revealFrom', 'left', [this.windowDimensions]);
+        this.revealType = this.getProp('revealType', 'none', [this.windowDimensions]);
         
         this.setPosition();
         this.setWidth(this.panelDimensions.width);
