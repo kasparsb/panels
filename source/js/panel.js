@@ -328,7 +328,16 @@ panel.prototype = {
 
     afterHide: function() {
         removeCssClass(this.el, 'modal-panel--visible');
-        //addStyle(this.el, {display: 'none'});
+        
+        // Jānovāc visi inline style deklarācijas no animableElements
+        this.setAnimableElementsStyle({
+            width: '',
+            height: '',
+            left: '',
+            top: '',
+            opacity: '',
+            transform: ''
+        })
 
         this.hideInProgress = false;
 

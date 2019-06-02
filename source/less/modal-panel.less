@@ -1,4 +1,5 @@
 .modal-panel {
+
     /** Vienmēr taisām, lai pārklāj visu ekrānu
      * Sākuma stadijā ir overflow hidden, lai &__w varētu
      * nopoziconēt ārpus ekrāna un tad ar animāciju iebīdīt ekrānā
@@ -12,48 +13,20 @@
      */
     position: absolute;
     top: 0;
-    
-    
-    /**
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: none;
-    */
 
     /**
      * Šādi taisām, jo uzlikt display block ir dārgi
      * reveal animācija nedaudz iebrezē
      */
-    left: -999999px;
+    left: @leftPositionForHidden;
     width: 100%;
     height: 100%;
     display: block;
 
-
     z-index: @modalPanelZIndex;
     overflow: hidden;
 
-
     &:extend(.modal-panel-remove-tap-highlite);
-
-    /** Pirmā stadija, kad panelis ir redzams un pārklāj visu ekrānu */
-    &--visible {
-        /*display: block;*/
-        left: 0;
-    }
-
-    /** Animācija ir beigusies, liekam lai overflow ir scrolējam */
-    &--ready {
-        overflow: visible;
-        position: absolute;
-    }
-
-    /** Gadījums, kad otrs panelis nāk pa virsu un vajag, lai body scrollbars pazūd */
-    &--disabled {
-        overflow: hidden;
-        position: fixed;
-    }
 
     /** 
      * Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu 
@@ -67,6 +40,7 @@
         /** Fixed: iOS gadījumā, lai stāv */
         position: fixed;
         top: 0;
+        left: @leftPositionForHidden;
         /** 
          * Height tiek definēts panel.js, jo height var būt custom 
          * 120% vajag tikai, ja ir fullheight
@@ -77,14 +51,12 @@
 
         z-index: 10;
     }
-    &--fullheight &__bg {
-
-    }
 
     &__header {
         /** Fixed: iOS gadījumā, lai stāv */
         position: fixed;
         top: 0;
+        left: @leftPositionForHidden;
 
         height: @modalPanelHeaderHeight;
 
@@ -98,6 +70,8 @@
 
         height: @modalPanelFooterHeight;
         background: #fff;
+
+        left: @leftPositionForHidden;
     }
 
     &__header,
@@ -118,28 +92,6 @@
         /** Atbrīvojam vietu header */
         padding-top: @modalPanelHeaderHeight + 1px;
     }
-
-    &--footer &__content {
-        /** Atbrīvojam vietu priekš footer */
-        padding-bottom: @modalPanelFooterHeight;
-    }
-
-
-    /**
-    &--left &__bg,
-    &--left &__header,
-    &--left &__footer,
-    &--left &__content {
-        left: 0;
-    }
-    &--right &__bg,
-    &--right &__header,
-    &--right &__footer,
-    &--right &__content {
-        right: 0;
-    }
-    */
-
 
     &__close {
         position: absolute;
@@ -170,5 +122,34 @@
         text-align: center;
         text-transform: uppercase;
         font-size: 1rem;
+    }
+
+
+    &--footer &__content {
+        /** Atbrīvojam vietu priekš footer */
+        padding-bottom: @modalPanelFooterHeight;
+    }
+
+
+
+
+    /** Pirmā stadija, kad panelis ir redzams un pārklāj visu ekrānu */
+    &--visible,
+    &--visible &__bg,
+    &--visible &__footer,
+    &--visible &__header {
+        left: 0;
+    }
+    
+    /** Animācija ir beigusies, liekam lai overflow ir scrolējam */
+    &--ready {
+        overflow: visible;
+        position: absolute;
+    }
+
+    /** Gadījums, kad otrs panelis nāk pa virsu un vajag, lai body scrollbars pazūd */
+    &--disabled {
+        overflow: hidden;
+        position: fixed;
     }
 }
