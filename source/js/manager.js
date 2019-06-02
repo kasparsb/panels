@@ -105,6 +105,14 @@ function handlePanelHide(Panel, config) {
     }
 }
 
+function handlePanelResize(Panel) {
+    if (!Panel.isOpen) {
+        return;
+    }
+
+    Panel.resize();
+}
+
 function panelBeforeShow(panel) {
     openPanelsCount++;
     openPanelsStack.push(panel);
@@ -350,6 +358,9 @@ module.exports = {
     },
     hidePanel: function(panelName, props) {
         handlePanelHide(getPanel(panelName), props)
+    },
+    resizePanel: function(panelName) {
+        handlePanelResize(getPanel(panelName))
     },
     isOpen: function(panelName) {
         return getPanel(panelName).isOpen;

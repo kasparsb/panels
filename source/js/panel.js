@@ -184,9 +184,15 @@ panel.prototype = {
         })
     },
 
+    /**
+     * Ja platums ir tāds pats kā viewport platums, tad ir 
+     * jāliek 100% lai gadījumā, kad parādās vertical scroll bar,
+     * tad neparādītos vertical sctrollbar un nevajadzētu rēķināt
+     * scrollbar platumu un atņemt to no platuma
+     */
     setWidth: function(width) {
         this.setAnimableElementsStyle({
-            width: width+'px'
+            width: width >= this.windowDimensions.width ? '100%' : width+'px'
         });
     },
 
@@ -270,6 +276,8 @@ panel.prototype = {
         this.setPosition();
         this.setWidth(this.panelDimensions.width);
         this.setHeight(this.panelDimensions.height);
+
+
         this.applyProgress(0);
 
         /**
@@ -342,6 +350,29 @@ panel.prototype = {
         this.hideInProgress = false;
 
         this.isOpen = false;
+    },
+
+    resize: function() {
+        this.windowDimensions = getWindowDimensions();
+
+        this.panelDimensions = {
+            width: this.getProp('width', 320, [this.windowDimensions]),
+            height: this.getProp('height', this.windowDimensions.height, [this.windowDimensions])
+        };
+        
+        this.align = calcAlignXY(this.getProp('align', 'left top', [this.windowDimensions]), this.panelDimensions, this.windowDimensions);
+        this.revealFrom = this.getProp('revealFrom', 'left', [this.windowDimensions]);
+        this.revealType = this.getProp('revealType', 'none', [this.windowDimensions]);
+        
+        this.setPosition();
+        this.setWidth(this.panelDimensions.width);
+        this.setHeight(this.panelDimensions.height);
+
+        /**
+         * @todo Iespējams, ka vajag pārtiasīt, lai footer ir relatīvs pret content container
+         * Pašlaik footer tiek poziconēts ar top, jo tas ie neatkarīgi no panel izmēriem
+         */
+        this.setFooterPosition(this.panelDimensions.width, this.panelDimensions.height);
     },
 
     disable: function() {

@@ -14,6 +14,7 @@ module.exports = {
     register: Manager.registerPanel,
     get: Manager.getPanel,
     show: Manager.showPanel,
+    resize: Manager.resizePanel,
     hide: Manager.hidePanel,
     isOpen: Manager.isOpen,
 
