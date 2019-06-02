@@ -21,20 +21,24 @@ var Step, OverlayStep, panels = {},
  * Bezier curve for sliding animations
  * Begging is fast, ending is slow
  */
-var slidingAnimBezierCurve = [0.075, 0.82, 0.165, 1];
+var slidingAnimBezierCurve = {
+    show: [0.075, 0.82, 0.165, 1],
+    hide: [0.6, 0.04, 0.98, 0.335]
+};
 
 /**
  * Bezier curve for fading animations
  * Begging is fast, ending is slow
  */
-var fadingAnimBezierCurve = [0.55, 0.085, 0.68, 0.53];
+var fadingAnimBezierCurve = {
+    show: [0.55, 0.085, 0.68, 0.53],
+    hide: [0.25, 0.46, 0.45, 0.94]
+};
 
 
 function init() {
     Step = new Stepper();
-    OverlayStep = new Stepper({
-        bezierCurve: fadingAnimBezierCurve
-    });
+    OverlayStep = new Stepper();
 }
 
 function registerPanel(name, $el, props) {
@@ -172,6 +176,7 @@ function showPanel(panel, config) {
         }
         else {
             OverlayStep.run({
+                bezierCurve: fadingAnimBezierCurve.show,
                 duration: animDurations.overlay,
                 onStep: function(p){
                     Overlay.applyProgress(p)
@@ -194,7 +199,7 @@ function showPanel(panel, config) {
         var applyProgressCb = createPanelApplyProgressCallback(panel);
 
         Step.run({
-            bezierCurve: getPanelRevealAnimationBezierCurve(panel),
+            bezierCurve: getPanelRevealAnimationBezierCurve(panel).show,
             duration: animDurations.panel,
             onStep: function(p){
 
@@ -242,6 +247,7 @@ function hidePanel(panel, config) {
         }
         else {
             OverlayStep.run({
+                bezierCurve: fadingAnimBezierCurve.hide,
                 duration: animDurations.overlay,
                 onStep: function(p){
                     if (Overlay.getProgress() >= (1-p)) {
@@ -262,7 +268,7 @@ function hidePanel(panel, config) {
         var applyProgressCb = createPanelApplyProgressCallback(panel);
 
         Step.run({
-            bezierCurve: getPanelRevealAnimationBezierCurve(panel),
+            bezierCurve: getPanelRevealAnimationBezierCurve(panel).hide,
             duration: animDurations.panel,
             onStep: function(p){
                 
