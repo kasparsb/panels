@@ -62,3 +62,7 @@ Iespēju nokonfigurēt uzreiz aizvēršanas un atvēršanas animDurations
 
 
 Z-index kontrolēšana no JS nevis css
+
+TODO
+Vajag iespēju modal-panel__content uzlikt fiksētu augstumu, lai __content būtu fiksēts nevis pēc iekšējā content augstuma
+    Šo varbūt vajag apvienot kopā ar to, ka skrollēšana ir __content elementā nevis visā documentā
