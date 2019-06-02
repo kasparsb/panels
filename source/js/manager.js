@@ -17,12 +17,23 @@ var Step, OverlayStep, panels = {},
         show: {}
     };
 
+/**
+ * Bezier curve for sliding animations
+ * Begging is fast, ending is slow
+ */
+var slidingAnimBezierCurve = [0.075, 0.82, 0.165, 1];
+
+/**
+ * Bezier curve for fading animations
+ * Begging is fast, ending is slow
+ */
+var fadingAnimBezierCurve = [0.55, 0.085, 0.68, 0.53];
+
+
 function init() {
-    Step = new Stepper({
-        bezierCurve: [0.075, 0.82, 0.165, 1]
-    });
+    Step = new Stepper();
     OverlayStep = new Stepper({
-        bezierCurve: [0.455, 0.03, 0.515, 0.955]
+        bezierCurve: fadingAnimBezierCurve
     });
 }
 
@@ -183,6 +194,7 @@ function showPanel(panel, config) {
         var applyProgressCb = createPanelApplyProgressCallback(panel);
 
         Step.run({
+            bezierCurve: getPanelRevealAnimationBezierCurve(panel),
             duration: animDurations.panel,
             onStep: function(p){
 
@@ -250,6 +262,7 @@ function hidePanel(panel, config) {
         var applyProgressCb = createPanelApplyProgressCallback(panel);
 
         Step.run({
+            bezierCurve: getPanelRevealAnimationBezierCurve(panel),
             duration: animDurations.panel,
             onStep: function(p){
                 
@@ -309,6 +322,15 @@ function defaultPanelApplyProgressCallback(panel, p, defaultApplyProgress, bodyF
  */
 function createPanelApplyProgressCallback(panel) {
     return panel.getProp('applyProgress', defaultPanelApplyProgressCallback);
+}
+
+function getPanelRevealAnimationBezierCurve(panel) {
+
+    switch (panel.getProp('revealType')) {
+        case 'fade': return fadingAnimBezierCurve;
+    }
+
+    return slidingAnimBezierCurve;
 }
 
 module.exports = {
