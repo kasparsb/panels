@@ -196,7 +196,7 @@ function showPanel(panel, config) {
         }
         else {
             OverlayStep.run({
-                bezierCurve: fadingAnimBezierCurve.show,
+                bezierCurve: panel.getProp('overlayAnimBezierCurve', fadingAnimBezierCurve).show,
                 duration: animDurations.overlay,
                 onStep: function(p){
                     Overlay.applyProgress(p)
@@ -260,7 +260,7 @@ function hidePanel(panel, config) {
         }
         else {
             OverlayStep.run({
-                bezierCurve: fadingAnimBezierCurve.hide,
+                bezierCurve: panel.getProp('overlayAnimBezierCurve', fadingAnimBezierCurve).hide,
                 duration: animDurations.overlay,
                 onStep: function(p){
                     if (Overlay.getProgress() >= (1-p)) {
@@ -344,12 +344,12 @@ function createPanelApplyProgressCallback(panel) {
 }
 
 function getPanelRevealAnimationBezierCurve(panel) {
-
     switch (panel.getProp('revealType')) {
-        case 'fade': return fadingAnimBezierCurve;
+        case 'fade': 
+            return panel.getProp('panelAnimBezierCurve', fadingAnimBezierCurve);
+        default:
+            return panel.getProp('panelAnimBezierCurve', slidingAnimBezierCurve);
     }
-
-    return slidingAnimBezierCurve;
 }
 
 module.exports = {

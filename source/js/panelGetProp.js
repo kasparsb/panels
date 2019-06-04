@@ -2,6 +2,7 @@ var solveValue = require('./solveValue');
 var validateAnimDurations = require('./validateAnimDurations');
 var validateZIndex = require('./validateZIndex');
 var validateAlign = require('./validateAlign');
+var validateAnimBezierCurve = require('./validateAnimBezierCurve');
 
 /**
  * Atgriežam property pēc tā name
@@ -52,7 +53,14 @@ function panelGetProp(props1, props2, name, defaultValue, args) {
         case 'align':
             r = validateAlign(r);
             break;
+        case 'overlayAnimBezierCurve':
+        case 'panelAnimBezierCurve':
+            console.log(name, validateAnimBezierCurve(r));
+            r = validateAnimBezierCurve(r)
     }
+
+    
+    
 
     return r
 }
