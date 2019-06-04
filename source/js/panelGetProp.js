@@ -30,13 +30,16 @@ function panelGetProp(props1, props2, name, defaultValue, args) {
 
     // Solve property value
     // If r is function it is executed to get value
-    if (name == 'applyProgress') {
-        // applyProgress vienmēr būs funkcija, tāpēc do not solveValue
+    switch (name) {
+        // these are always callback functions, do not solveValue
+        case 'applyProgress':
+        case 'onShow':
+        case 'onHide':
+            break;
+        default:
+            r = solveValue(r, args);
+            break;
     }
-    else {
-        r = solveValue(r, args);
-    }
-    
 
     // Papildus apstrādes noteiktām props
     switch (name) {

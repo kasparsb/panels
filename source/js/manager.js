@@ -129,6 +129,15 @@ function panelBeforeShow(panel) {
     panel.beforeShow();
 }
 
+function panelAfterShow(panel) {
+    panel.showPanelDone()
+    
+    // Panel show event
+    panel.getProp('onShow', function(){})()
+
+    panel.setOverrideProps(null);
+}
+
 function panelBeforeHide(panel) {
     
     panel.beforeHide();
@@ -160,6 +169,9 @@ function panelAfterHide(panel) {
     }
 
     panel.afterHide();
+
+    // Panel hide event
+    panel.getProp('onHide', function(){})()
 }
 
 function showPanel(panel, config) {
@@ -196,11 +208,8 @@ function showPanel(panel, config) {
 
     if (animDurations.panel <= 0) {
         panel.applyProgress(1);
-        if (panel.showPanelDone) {
-            panel.showPanelDone()
-        }
 
-        panel.setOverrideProps(null);
+        panelAfterShow(panel);
     }
     else {
 
@@ -222,11 +231,7 @@ function showPanel(panel, config) {
 
             }, 
             onDone: function(){
-                if (panel.showPanelDone) {
-                    panel.showPanelDone()
-                }
-
-                panel.setOverrideProps(null);
+                panelAfterShow(panel)
             }
         })
     }
