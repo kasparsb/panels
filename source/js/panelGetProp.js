@@ -55,7 +55,6 @@ function panelGetProp(props1, props2, name, defaultValue, args) {
             break;
         case 'overlayAnimBezierCurve':
         case 'panelAnimBezierCurve':
-            console.log(name, validateAnimBezierCurve(r));
             r = validateAnimBezierCurve(r)
     }
 
