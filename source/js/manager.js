@@ -177,7 +177,8 @@ function panelAfterHide(panel) {
 function showPanel(panel, config) {
     panel.setOverrideProps(config);
 
-    setZIndex(panel.getProp('zIndex'), panel);
+    // Izpildām user uzstādīto before show eventu
+    panel.getProp('onBeforeShow', function(){})();
 
     var animDurations = panel.getProp('animDurations');
     var showOverlay = panel.getProp('showOverlay', true);
@@ -186,6 +187,8 @@ function showPanel(panel, config) {
     if (openPanelsCount > 0) {
         openPanelsStack[openPanelsStack.length-1].disable();
     }
+
+    setZIndex(panel.getProp('zIndex'), panel);
 
     panelBeforeShow(panel);
 
@@ -239,6 +242,10 @@ function showPanel(panel, config) {
 
 function hidePanel(panel, config) {
     panel.setOverrideProps(config);
+
+    // Panel before hide event
+    panel.getProp('onBeforeHide', function(){})();
+
     var animDurations = panel.getProp('animDurations');
 
     var done = function() {
@@ -373,6 +380,14 @@ module.exports = {
 
     hideAll: hideAll,
 
+    /**
+     * @todo Šis ir jāpārsauc par onCloseClick
+     * tas ir events, kad lietotājs ir izvēlējies aizvērt paneli
+     * Šeit var pirms tam kaut ko izdarīt un tad izpildīts reālo
+     * onCloseClick funkcionalitāti
+     *
+     * Bet varbūt vispār šitādu lietu nevajag, lai liek event uz paneli pa tiešo
+     */
     onHide: function(panelName, cb) {
         callbacks.hide = propPushToArray(callbacks.hide, panelName, cb)
     }

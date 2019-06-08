@@ -34,7 +34,9 @@ function panelGetProp(props1, props2, name, defaultValue, args) {
     switch (name) {
         // these are always callback functions, do not solveValue
         case 'applyProgress':
+        case 'onBeforShow':
         case 'onShow':
+        case 'onBeforHide':
         case 'onHide':
             break;
         default:
