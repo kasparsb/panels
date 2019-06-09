@@ -130,7 +130,7 @@ function panelBeforeShow(panel) {
 }
 
 function panelAfterShow(panel) {
-    panel.showPanelDone()
+    panel.afterShow()
     
     // Panel show event
     panel.getProp('onShow', function(){})()

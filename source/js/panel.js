@@ -4,6 +4,8 @@ var hasCssClass = require('./hasCssClass');
 var removeCssClass = require('./removeCssClass');
 var addStyle = require('./addStyle');
 var getWindowDimensions = require('./getWindowDimensions');
+var getWindowScrollTop = require('./getWindowScrollTop');
+var setWindowScrollTop = require('./setWindowScrollTop');
 var calcPanelXYOffsetByProgress = require('./calcPanelXYOffsetByProgress');
 var calcAlignXY = require('./calcAlignXY');
 var domEvents = require('./domEvents');
@@ -45,6 +47,18 @@ function panel(name, el, props) {
     this.align;
     this.revealFrom;
     this.revealType;
+
+    /**
+     * Pēdējais scrllTop kāds bija aizverot paneli
+     * Scroll top ir tas, kur radīja pats panel content
+     */
+    this.lastScrollTop = 0;
+    /**
+     * Content elementa Y offset, lai kompensētu scroll top
+     * Kad taisa hide, ir svarīgi saglabāt scrollTop, lai
+     * saturs nenolec uz leju
+     */
+    this.contentElementYOffset = 0;
 
     /**
      * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
@@ -152,6 +166,13 @@ panel.prototype = {
         }
     },
 
+    /**
+     * Helper metode ar kuru uzlikt content elementam css
+     */
+    setContentStyle: function(cssProps) {
+        addStyle(this.animableElements['content'], cssProps);
+    },
+
     applyProgress: function(progress) {
         if (this.revealType == 'slide') {
             this.setXYOffset(
@@ -175,6 +196,11 @@ panel.prototype = {
     setXYOffset: function(offset) {
         this.setAnimableElementsStyle({
             transform: 'translate3d('+offset.x+'px,'+offset.y+'px,0)'
+        }, ['bg', 'header', 'footer'])
+
+        // Content elementam atsevišķi uzstādā, jo tam var būt uzlikta y offset
+        this.setContentStyle({
+            transform: 'translate3d('+offset.x+'px,'+(this.contentElementYOffset + offset.y)+'px,0)'
         })
     },
 
@@ -277,6 +303,11 @@ panel.prototype = {
         this.setWidth(this.panelDimensions.width);
         this.setHeight(this.panelDimensions.height);
 
+        // Atjaunojam scrollTop. Uzliekam content elementa Y offset
+        if (this.getProp('restoreScrollTop', false)) {
+            this.contentElementYOffset = -this.lastScrollTop;
+        }        
+
 
         this.applyProgress(0);
 
@@ -306,7 +337,7 @@ panel.prototype = {
         }
     },
 
-    showPanelDone: function() {
+    afterShow: function() {
         addCssClass(this.el, 'modal-panel--ready');
 
         /**
@@ -317,6 +348,11 @@ panel.prototype = {
             transform: ''
         })
 
+        // Atjaunojam scroll top
+        if (this.getProp('restoreScrollTop', false)) {
+            setWindowScrollTop(this.lastScrollTop);
+            this.contentElementYOffset = 0;
+        }
 
         /**
          * iOS fix, ja neuzliek transform, tad skrollējot raustīsies fixed header
@@ -331,12 +367,37 @@ panel.prototype = {
     beforeHide: function() {
         this.hideInProgress = true;
 
+        /**
+         * kad tiek noņemta klase modal-panel--ready
+         * tad panelis kļūst overflow hidden
+         * Šajā mirklī pazūt iepriekšējais scrollTop
+         * jo tas ir uz visu dokumentu. Kad ir overflow hidden
+         * tad skrolla vairs nav, jo nav overflowa
+         *
+         * Tāpēc šeit vajag nosimulēt scrollTop uzliekot uz 
+         * modal-panel__content transform: translate(0,-currentScrollTop)
+         */
+        
+        // Sitas ir jāpieglabā kā offset vērtība, jo applyProgress pārraksta transform
+        // Pāpārsauc par lastScrollTop, tad šito varētu atjaunot atkārtoti atverto paneli
+        // jātaisa, kā konfigurējams, ka tiešām grib lai atcerās lastScrollTop
+        this.lastScrollTop = getWindowScrollTop();
+
+        this.contentElementYOffset = -this.lastScrollTop;
+
+        this.setContentStyle({
+            transform: 'translate(0,'+this.contentElementYOffset+'px)'
+        })
+
         removeCssClass(this.el, 'modal-panel--ready');
+  
     },
 
     afterHide: function() {
         removeCssClass(this.el, 'modal-panel--visible');
         
+        this.contentElementYOffset = 0;
+
         // Jānovāc visi inline style deklarācijas no animableElements
         this.setAnimableElementsStyle({
             width: '',
