@@ -53,12 +53,6 @@ function panel(name, el, props) {
      * Scroll top ir tas, kur radīja pats panel content
      */
     this.lastScrollTop = 0;
-    /**
-     * Content elementa Y offset, lai kompensētu scroll top
-     * Kad taisa hide, ir svarīgi saglabāt scrollTop, lai
-     * saturs nenolec uz leju
-     */
-    this.contentElementYOffset = 0;
 
     /**
      * @todo Apstrādāt gadījumu, kad ir padots jquery objekts
@@ -79,7 +73,12 @@ function panel(name, el, props) {
         'bg': this.el.querySelector('.modal-panel__bg'),
         'header': this.el.querySelector('.modal-panel__header'),
         'footer': this.el.querySelector('.modal-panel__footer'),
-        'content': this.el.querySelector('.modal-panel__content')
+        'content': this.el.querySelector('.modal-panel__content'),
+        /**
+         * Šis tiek izmantots, lai noturētu content scrollTop, 
+         * kad panelis tiek slēpts
+         */
+        'content-inner': this.el.querySelector('.modal-panel__content-inner')
     }
 
     // Ja ir footer, tad pieliekam klasi
@@ -167,10 +166,18 @@ panel.prototype = {
     },
 
     /**
-     * Helper metode ar kuru uzlikt content elementam css
+     * Helper metode ar kuru notur content scrollTop
+     * Tā kā panelim tiek uzlikts overflow hidden, tāpēc
+     * scrolLTop pazūd un to vajag simulēt ar transform
      */
-    setContentStyle: function(cssProps) {
-        addStyle(this.animableElements['content'], cssProps);
+    preserveContentScrollTop: function(scrollTop) {
+        if (!this.animableElements['content-inner']) {
+            return;
+        }
+        
+        addStyle(this.animableElements['content-inner'], {
+            transform: scrollTop == 0 ? '' : 'translate(0, -'+scrollTop+'px)'
+        });
     },
 
     applyProgress: function(progress) {
@@ -196,11 +203,6 @@ panel.prototype = {
     setXYOffset: function(offset) {
         this.setAnimableElementsStyle({
             transform: 'translate3d('+offset.x+'px,'+offset.y+'px,0)'
-        }, ['bg', 'header', 'footer'])
-
-        // Content elementam atsevišķi uzstādā, jo tam var būt uzlikta y offset
-        this.setContentStyle({
-            transform: 'translate3d('+offset.x+'px,'+(this.contentElementYOffset + offset.y)+'px,0)'
         })
     },
 
@@ -305,8 +307,8 @@ panel.prototype = {
 
         // Atjaunojam scrollTop. Uzliekam content elementa Y offset
         if (this.getProp('restoreScrollTop', false)) {
-            this.contentElementYOffset = -this.lastScrollTop;
-        }        
+            this.preserveContentScrollTop(this.lastScrollTop);
+        }
 
 
         this.applyProgress(0);
@@ -351,7 +353,7 @@ panel.prototype = {
         // Atjaunojam scroll top
         if (this.getProp('restoreScrollTop', false)) {
             setWindowScrollTop(this.lastScrollTop);
-            this.contentElementYOffset = 0;
+            this.preserveContentScrollTop(0);
         }
 
         /**
@@ -383,11 +385,7 @@ panel.prototype = {
         // jātaisa, kā konfigurējams, ka tiešām grib lai atcerās lastScrollTop
         this.lastScrollTop = getWindowScrollTop();
 
-        this.contentElementYOffset = -this.lastScrollTop;
-
-        this.setContentStyle({
-            transform: 'translate(0,'+this.contentElementYOffset+'px)'
-        })
+        this.preserveContentScrollTop(this.lastScrollTop);
 
         removeCssClass(this.el, 'modal-panel--ready');
   
@@ -396,7 +394,7 @@ panel.prototype = {
     afterHide: function() {
         removeCssClass(this.el, 'modal-panel--visible');
         
-        this.contentElementYOffset = 0;
+        this.preserveContentScrollTop(0);
 
         // Jānovāc visi inline style deklarācijas no animableElements
         this.setAnimableElementsStyle({

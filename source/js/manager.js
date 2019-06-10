@@ -249,6 +249,7 @@ function hidePanel(panel, config) {
     var animDurations = panel.getProp('animDurations');
 
     var done = function() {
+        
         if (OverlayStep.isRunning() || Step.isRunning()) {
             return;
         }
@@ -291,7 +292,6 @@ function hidePanel(panel, config) {
             bezierCurve: getPanelRevealAnimationBezierCurve(panel).hide,
             duration: animDurations.panel,
             onStep: function(p){
-                
                 // Padodam panel, progress, default applyProgress metodi, kura ir obligāti
                 // jāizsauc no custom applyProgress funkcijas
                 applyProgressCb(
