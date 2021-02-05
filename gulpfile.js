@@ -57,8 +57,6 @@ function bundleJs(browserify, compress, firstRun) {
         console.log(er.annotated);
     }
 
-    var destFileName = 'app.min-'+pkg.version+'.js';
-
     var s = browserify;
 
     /**
@@ -101,7 +99,7 @@ function bundleJs(browserify, compress, firstRun) {
     s = s
         .bundle()
         .on('error', handleError)
-        .pipe(source(destFileName));
+        .pipe(source(files.destJs));
 
     if (compress) {
         console.log('Uglify js');
