@@ -2,6 +2,8 @@ var BodyScroll = require('./bodyScrollDisable');
 var Overlay = require('./overlay');
 var Manager = require('./manager');
 
+console.log('debug');
+
 function init() {
     BodyScroll.init();
     Overlay.init();
