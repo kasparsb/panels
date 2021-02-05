@@ -3,6 +3,7 @@ import q from 'dom-helpers/src/q';
 import addClass from 'dom-helpers/src/addClass';
 import hasClass from 'dom-helpers/src/hasClass';
 import removeClass from 'dom-helpers/src/removeClass';
+import toggleClass from 'dom-helpers/src/toggleClass';
 import addStyle from 'dom-helpers/src/addStyle';
 import getWindowDimensions from 'dom-helpers/src/getWindowDimensions';
 import getWindowScrollTop from 'dom-helpers/src/getWindowScrollTop';
@@ -14,6 +15,10 @@ import click from 'dom-helpers/src/event/click';
 import target from 'dom-helpers/src/event/target';
 import parents from 'dom-helpers/src/parents';
 import getElementOuterDimensions from 'dom-helpers/src/getOuterDimensions';
+
+let defaultAlign = 'center center';
+let defaultWidth = 320;
+let defaultHideOnOutsideClick = true;
 
 function panel(name, el, props) {
 
@@ -42,6 +47,10 @@ function panel(name, el, props) {
     this.panelDimensions = { width: 0, height: 0 }
     this.windowDimensions = { width: 0, height: 0 }
 
+    // Tiek izmantots, lai korekti nopozicionētu content elementu
+    this.headerDimensions = { width: 0, height: 0 }
+    this.footerDimensions = { width: 0, height: 0 }
+
     // Šie tiek definēti beforeShow
     this.align;
     this.revealFrom;
@@ -63,21 +72,17 @@ function panel(name, el, props) {
         'header': q(this.el, '.modal-panel__header'),
         'footer': q(this.el, '.modal-panel__footer'),
         'content': q(this.el, '.modal-panel__content'),
-        /**
-         * Šis tiek izmantots, lai noturētu content scrollTop,
-         * kad panelis tiek slēpts
-         */
+        // Šis tiek izmantots, lai noturētu content scrollTop, kad panelis tiek slēpts
         'content-inner': q(this.el, '.modal-panel__content-inner')
     }
 
-    // Ja ir footer, tad pieliekam klasi
-    if (this.animableElements.footer) {
-        addClass(this.el, 'modal-panel--footer');
-    }
-    else {
-        removeClass(this.el, 'modal-panel--footer');
+    // Ja nav bg, tad obligāti jāuztaisa
+    if (!this.animableElements.bg) {
+        this.animableElements.bg = this.createBg(this.el);
     }
 
+    // Ja ir footer, tad pieliekam klasi
+    toggleClass(this.el, 'modal-panel--footer', this.animableElements.footer);
 
     //this.swipe = new Swipe(this.el, {'direction': 'horizontal vertical'});
 
@@ -93,7 +98,7 @@ panel.prototype = {
 
             // Pats panelis, reaģējam uz ārpus paneļa body click
             if (el === this.el) {
-                if (this.getProp('hideOnOutsideClick', false)) {
+                if (this.getProp('hideOnOutsideClick', defaultHideOnOutsideClick)) {
                     closePanel = true;
                 }
             }
@@ -115,6 +120,13 @@ panel.prototype = {
                 }
             }
         })
+    },
+
+    createBg(parent) {
+        let r = document.createElement('div');
+        r.className = 'modal-panel__bg';
+        parent.appendChild(r);
+        return r;
     },
 
     /**
@@ -160,13 +172,11 @@ panel.prototype = {
      * scrolLTop pazūd un to vajag simulēt ar transform
      */
     preserveContentScrollTop(scrollTop) {
-        if (!this.animableElements['content-inner']) {
-            return;
+        if (this.animableElements['content-inner']) {
+            this.setAnimableElementsStyle({
+                transform: scrollTop == 0 ? '' : 'translate(0, -'+scrollTop+'px)'
+            }, ['content-inner'])
         }
-
-        addStyle(this.animableElements['content-inner'], {
-            transform: scrollTop == 0 ? '' : 'translate(0, -'+scrollTop+'px)'
-        });
     },
 
     applyProgress(progress) {
@@ -213,7 +223,7 @@ panel.prototype = {
         });
     },
 
-    setHeight(height) {
+    setHeight(height, width, headerDimensions, footerDimensions) {
         /**
          * Mobile safari: jāuzliek windowHeight, lai neparādītos bottom pogas
          * Visi elementi ir fixed, šis būs tas, kas saglabās windowHeight
@@ -222,6 +232,48 @@ panel.prototype = {
          */
         addStyle(this.el, {height: this.windowDimensions.height+'px'})
 
+
+         /*
+          * Ja paneļa platums, augstums ir vienāds ar window. Panelis nosedz visu ekrānu,
+          * tad content elementam neliekam augstumu. Overflow scrollēšana notiks
+          * uz visu dokumentu nevis content elementā
+          */
+        if (width >= this.windowDimensions.width && height >= this.windowDimensions.height) {
+            // Notīrām augstumu un overflow
+            this.setAnimableElementsStyle({
+                height: height+'px',
+                overflow: 'auto',
+                boxSizing: 'border-box',
+                // Atbrīvojam vietu priekš header un footer
+                paddingTop: headerDimensions.height+'px',
+                paddingBottom: footerDimensions.height+'px'
+            }, ['content'])
+        }
+        /**
+         * Paneļa augstums ir mazāks par window height. Tāpēc augstums ir jāliek content elementa
+         * Scroll notiks content elementā
+         */
+        else {
+            /**
+             * Chrome uz Android: ja height == window.height, tad scrollēšana overlow elementā ir tā pat
+             * kā uz document. Tobiš skrollējot uz augštu pazūd adreses josla, uz leju parādās
+             * Ja kaut par vienu pixeli atšķiras, tad adreses josla stāv uz vietas
+             */
+            this.setAnimableElementsStyle({
+                height: (height - headerDimensions.height - footerDimensions.height)+'px',
+                top: (this.align.y + headerDimensions.height)+'px',
+                overflow: 'auto',
+                boxSizing: '',
+                paddingTop: '',
+                paddingBottom: ''
+
+                // Tikai iOS gadījumā
+                //'overflow-y': 'scroll',
+                //'-webkit-overflow-scrolling': 'touch'
+            }, ['content'])
+        }
+
+
         /**
          * Special case, kad height ir tāds pats kā viewportHeight
          * šajā gadījumā vajag lai background ir lielāks par viewport,
@@ -229,10 +281,10 @@ panel.prototype = {
          * kad parādās un pazūd bottom menu (kas izraisa ekrāna paaugstināšanos)
          */
         if (height >= this.windowDimensions.height) {
-            addStyle(this.animableElements.bg, {height: '120%'})
+            this.setAnimableElementsStyle({height: '120%'}, ['bg'])
         }
         else {
-            addStyle(this.animableElements.bg, {height: height+'px'})
+            this.setAnimableElementsStyle({height: height+'px'}, ['bg'])
         }
     },
 
@@ -259,21 +311,30 @@ panel.prototype = {
      * Vēl vajag zināt kāds ir footer augstums, bet
      * kamēr panelis display:none footer augstums nav zināms
      */
-    setFooterPosition(panelWidth, panelHeight) {
+    setFooterPosition(panelWidth, panelHeight, dimensions) {
         if (!this.animableElements.footer) {
             return
         }
 
         // Footer vajag pozicionēt pret panel apakšu
-        let dimensions = getElementOuterDimensions(this.animableElements.footer);
-
         this.setAnimableElementsStyle({
             left: this.align.x+'px',
             top: (this.align.y + panelHeight - dimensions.height)+'px'
-        }, [
-            // Tikai footer
-            'footer'
-        ]);
+        }, ['footer']);
+    },
+
+    getHeaderDimensions() {
+        if (this.animableElements.header) {
+            return getElementOuterDimensions(this.animableElements.header)
+        }
+        return {width: 0, height: 0}
+    },
+
+    getFooterDimensions() {
+        if (this.animableElements.footer) {
+            return getElementOuterDimensions(this.animableElements.footer)
+        }
+        return {width: 0, height: 0}
     },
 
     beforeShow() {
@@ -282,17 +343,20 @@ panel.prototype = {
         this.windowDimensions = getWindowDimensions();
 
         this.panelDimensions = {
-            width: this.getProp('width', 320, [this.windowDimensions]),
+            width: this.getProp('width', defaultWidth, [this.windowDimensions]),
             height: this.getProp('height', this.windowDimensions.height, [this.windowDimensions])
         };
 
-        this.align = calcAlignXY(this.getProp('align', 'left top', [this.windowDimensions]), this.panelDimensions, this.windowDimensions);
+        this.headerDimensions = this.getHeaderDimensions();
+        this.footerDimensions = this.getFooterDimensions();
+
+        this.align = calcAlignXY(this.getProp('align', defaultAlign, [this.windowDimensions]), this.panelDimensions, this.windowDimensions);
         this.revealFrom = this.getProp('revealFrom', 'left', [this.windowDimensions]);
         this.revealType = this.getProp('revealType', 'none', [this.windowDimensions]);
 
         this.setPosition();
         this.setWidth(this.panelDimensions.width);
-        this.setHeight(this.panelDimensions.height);
+        this.setHeight(this.panelDimensions.height, this.panelDimensions.width, this.headerDimensions, this.footerDimensions);
 
         // Atjaunojam scrollTop. Uzliekam content elementa Y offset
         if (this.getProp('restoreScrollTop', false)) {
@@ -312,7 +376,7 @@ panel.prototype = {
          * @todo Iespējams, ka vajag pārtaisīt, lai footer ir relatīvs pret content container
          * Pašlaik footer tiek poziconēts ar top, jo tas ie neatkarīgi no panel izmēriem
          */
-        this.setFooterPosition(this.panelDimensions.width, this.panelDimensions.height);
+        this.setFooterPosition(this.panelDimensions.width, this.panelDimensions.height, this.footerDimensions);
 
         /**
          * iOS fix, ja neuzliek transform, tad skrollējot raustīsies fixed header
@@ -388,7 +452,16 @@ panel.prototype = {
             left: '',
             top: '',
             opacity: '',
-            transform: ''
+            transform: '',
+            // content elementam tiek likts overflow atkarībā no panel height
+            overflow: '',
+            boxSizing: '',
+            paddingTop: '',
+            paddingBottom: ''
+
+            // tikai iOS gadījumā
+            //'overflow-y': '',
+            //'-webkit-overflow-scrolling': ''
         })
 
         this.hideInProgress = false;
@@ -400,23 +473,26 @@ panel.prototype = {
         this.windowDimensions = getWindowDimensions();
 
         this.panelDimensions = {
-            width: this.getProp('width', 320, [this.windowDimensions]),
+            width: this.getProp('width', defaultWidth, [this.windowDimensions]),
             height: this.getProp('height', this.windowDimensions.height, [this.windowDimensions])
         };
 
-        this.align = calcAlignXY(this.getProp('align', 'left top', [this.windowDimensions]), this.panelDimensions, this.windowDimensions);
+        this.headerDimensions = this.getHeaderDimensions();
+        this.footerDimensions = this.getFooterDimensions();
+
+        this.align = calcAlignXY(this.getProp('align', defaultAlign, [this.windowDimensions]), this.panelDimensions, this.windowDimensions);
         this.revealFrom = this.getProp('revealFrom', 'left', [this.windowDimensions]);
         this.revealType = this.getProp('revealType', 'none', [this.windowDimensions]);
 
         this.setPosition();
         this.setWidth(this.panelDimensions.width);
-        this.setHeight(this.panelDimensions.height);
+        this.setHeight(this.panelDimensions.height, this.panelDimensions.width, this.headerDimensions, this.footerDimensions);
 
         /**
          * @todo Iespējams, ka vajag pārtiasīt, lai footer ir relatīvs pret content container
          * Pašlaik footer tiek poziconēts ar top, jo tas ie neatkarīgi no panel izmēriem
          */
-        this.setFooterPosition(this.panelDimensions.width, this.panelDimensions.height);
+        this.setFooterPosition(this.panelDimensions.width, this.panelDimensions.height, this.footerDimensions);
     },
 
     disable() {

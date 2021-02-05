@@ -4,32 +4,37 @@
      * Sākuma stadijā ir overflow hidden, lai &__w varētu
      * nopoziconēt ārpus ekrāna un tad ar animāciju iebīdīt ekrānā
      *
-     * Mobile safari note: nedrīkst taisīt fixed, jo tad pazūd viss 
+     * Mobile safari note: nedrīkst taisīt fixed, jo tad pazūd viss
      * flows, un parādās bottom pogas un adreses josla. (ja tie bija
      * samazināti, kad tiek skrollēts uz leju)
      * Fixed elements var būt augstāks par window un tā pat neparādās
-     * scrollbars, un tas ir tas, kas liek safari domāt, 
+     * scrollbars, un tas ir tas, kas liek safari domāt,
      * ka lapā satura nav (laikam tā ir)
      */
     position: absolute;
     top: 0;
 
+    &,
+    &__bg,
+    &__header,
+    &__footer {
+        left: @leftPositionForHidden;
+    }
+
     /**
      * Šādi taisām, jo uzlikt display block ir dārgi
      * reveal animācija nedaudz iebrezē
      */
-    left: @leftPositionForHidden;
     width: 100%;
     height: 100%;
     display: block;
-
     z-index: @modalPanelZIndex;
     overflow: hidden;
 
-    &:extend(.modal-panel-remove-tap-highlite);
+    //&:extend(.modal-panel-remove-tap-highlite);
 
-    /** 
-     * Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu 
+    /**
+     * Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu
      * Šis ir fixed, lai uz ios taisot overscroll tas stāvētu uz vietas
      * uz iOS 7 - iet līdzi un nestāv uz vietas
      */
@@ -40,14 +45,13 @@
         /** Fixed: iOS gadījumā, lai stāv */
         position: fixed;
         top: 0;
-        left: @leftPositionForHidden;
-        /** 
-         * Height tiek definēts panel.js, jo height var būt custom 
+        /**
+         * Height tiek definēts panel.js, jo height var būt custom
          * 120% vajag tikai, ja ir fullheight
          */
         /** height: 120%; */
 
-        background-color: @modalPanelContentBackgroundColor;
+        background-color: #fff;
 
         z-index: 10;
     }
@@ -56,23 +60,8 @@
         /** Fixed: iOS gadījumā, lai stāv */
         position: fixed;
         top: 0;
-        left: @leftPositionForHidden;
-
-        height: @modalPanelHeaderHeight;
-
-        border-bottom: 1px solid @modalPanelZoningColor;
-
-        background: #fff;
     }
 
-    &__footer {        
-        /** Pozicionēšana notiek no js */
-
-        height: @modalPanelFooterHeight;
-        background: #fff;
-
-        left: @leftPositionForHidden;
-    }
 
     &__header,
     &__footer {
@@ -84,16 +73,10 @@
     &__content {
         position: absolute;
         z-index: 90;
-
-        box-sizing: border-box;
-
         top: 0;
 
-        /** Atbrīvojam vietu header */
-        padding-top: @modalPanelHeaderHeight + 1px;
-
         /**
-         * Lai noturētu scrollTop, kad panelis tiek slēpts 
+         * Lai noturētu scrollTop, kad panelis tiek slēpts
          * Te vajag, lai ir &__content-inner elements
          */
         overflow: hidden;
@@ -102,41 +85,8 @@
     &__close {
         position: absolute;
         top: 0;
-        left: 0;
-        display: block;
-        width: @modalPanelHeaderHeight;
-        height: @modalPanelHeaderHeight;
-        line-height: @modalPanelHeaderHeight;
-        text-align: center;
-        color: silver;
-        text-decoration: none;
-        cursor: pointer;
-
-        border-right: 1px solid @modalPanelZoningColor;
+        right: 0;
     }
-
-    &__heading {
-        position: absolute;
-        left: @modalPanelHeaderHeight;
-        top: 50%;
-        margin: -@modalPanelHeaderHeight/4 0 0;
-        padding: 0 @modalPanelSidePadding;
-        
-        height: @modalPanelHeaderHeight/2;
-        line-height: @modalPanelHeaderHeight/2;
-
-        text-align: center;
-        text-transform: uppercase;
-        font-size: 1rem;
-    }
-
-
-    &--footer &__content {
-        /** Atbrīvojam vietu priekš footer */
-        padding-bottom: @modalPanelFooterHeight;
-    }
-
-
 
 
     /** Pirmā stadija, kad panelis ir redzams un pārklāj visu ekrānu */
@@ -146,7 +96,7 @@
     &--visible &__header {
         left: 0;
     }
-    
+
     /** Animācija ir beigusies, liekam lai overflow ir scrolējam */
     &--ready {
         overflow: visible;
