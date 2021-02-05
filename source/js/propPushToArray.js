@@ -1,4 +1,4 @@
-function propPushToArray(target, propName, value) {
+export default function(target, propName, value) {
     if (typeof target[propName] == 'undefined') {
         target[propName] = [];
     }
@@ -6,5 +6,3 @@ function propPushToArray(target, propName, value) {
 
     return target;
 }
-
-module.exports = propPushToArray

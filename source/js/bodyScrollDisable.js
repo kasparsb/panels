@@ -1,9 +1,10 @@
-var getWindowScrollTop = require('./getWindowScrollTop');
-var setWindowScrollTop = require('./setWindowScrollTop');
-var addCssClass = require('./addCssClass');
-var removeCssClass = require('./removeCssClass');
-var addStyle = require('./addStyle');
-var getStyle = require('./getStyle');
+import getWindowScrollTop from 'dom-helpers/src/getWindowScrollTop';
+import setWindowScrollTop from 'dom-helpers/src/setWindowScrollTop';
+import addClass from 'dom-helpers/src/addClass';
+import removeClass from 'dom-helpers/src/removeClass';
+import addStyle from 'dom-helpers/src/addStyle';
+import getStyle from 'dom-helpers/src/getStyle';
+import q from 'dom-helpers/src/q';
 
 var app, appContainer, scrollTop, prevAppWPosition = '';
 
@@ -13,13 +14,8 @@ function init() {
      * @todo Uztaisīt, lai app un app-w ir konfigurējami
      */
 
-    app = getEl('app');
-    appContainer = getEl('app-w');
-}
-
-function getEl(className) {
-    var r = document.getElementsByClassName(className);
-    return r.length > 0 ? r[0] : null;
+    app = q('.app');
+    appContainer = q('.app-w');
 }
 
 function disable() {
@@ -42,7 +38,7 @@ function disable() {
     addStyle(appContainer, {
         position: 'fixed'
     })
-    addCssClass(appContainer, 'app-w--disabled');
+    addClass(appContainer, 'app-w--disabled');
 
 
     addStyle(app, {
@@ -54,7 +50,7 @@ function enable() {
     addStyle(appContainer, {
         position: prevAppWPosition
     })
-    removeCssClass(appContainer, 'app-w--disabled');
+    removeClass(appContainer, 'app-w--disabled');
 
 
     addStyle(app, {
@@ -65,19 +61,19 @@ function enable() {
     setWindowScrollTop(scrollTop);
 }
 
-module.exports = {
-    init: init,
-    disable: disable,
-    enable: enable,
-    getEl: function() {
+export default {
+    init,
+    disable,
+    enable,
+    getEl() {
         return {
-            setStyle: function(style){
+            setStyle(style){
                 addStyle(appContainer, style)
             },
             el: appContainer
         }
     },
-    setZIndex: function(i) {
+    setZIndex(i) {
         addStyle(appContainer, {
             zIndex: i
         })

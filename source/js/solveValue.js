@@ -1,4 +1,4 @@
-function solveValue(value, customArguments) {
+export default function(value, customArguments) {
     switch (typeof value) {
         // Value var nodefinēt kā funkciju
         case 'function':
@@ -8,5 +8,3 @@ function solveValue(value, customArguments) {
             return value;
     }
 }
-
-module.exports = solveValue;

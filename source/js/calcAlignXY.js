@@ -1,5 +1,5 @@
-function calcAlignXY(align, panelDimensions, viewportDimensions) {
-    var r = {
+export default function(align, panelDimensions, viewportDimensions) {
+    let r = {
         x: 0,
         y: 0
     }
@@ -26,5 +26,3 @@ function calcAlignXY(align, panelDimensions, viewportDimensions) {
 
     return r;
 }
-
-module.exports = calcAlignXY

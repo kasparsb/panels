@@ -3,7 +3,7 @@
  * Progresa beigās panel ir jānostājas savā align vietā. Tātad x un y jābūt 0
  * Progresa sākumā jāaprēķina tas attālums, lai paneli novietotu vajadzīgajā starta vietā
  */
-function calcPanelXYOffsetByProgress(align, revealFrom, panelDimensions, viewportDimensions, progress) {
+export default function(align, revealFrom, panelDimensions, viewportDimensions, progress) {
 
     if (revealFrom == 'right') {
         /**
@@ -33,8 +33,6 @@ function calcPanelXYOffsetByProgress(align, revealFrom, panelDimensions, viewpor
         return {
             x: 0,
             y: (viewportDimensions.height - align.y) - ((viewportDimensions.height - align.y)*progress)
-        }   
+        }
     }
 }
-
-module.exports = calcPanelXYOffsetByProgress;

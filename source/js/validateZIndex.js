@@ -1,4 +1,4 @@
-function validateZIndex(d) {
+export default function(d) {
     if (typeof d == 'undefined') {
         d = {};
     }
@@ -17,5 +17,3 @@ function validateZIndex(d) {
 
     return d;
 }
-
-module.exports = validateZIndex

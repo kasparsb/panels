@@ -1,8 +1,8 @@
-var addStyle = require('./addStyle');
-var addCssClass = require('./addCssClass');
-var removeCssClass = require('./removeCssClass');
+import addStyle from 'dom-helpers/src/addStyle';
+import addClass from 'dom-helpers/src/addClass';
+import removeClass from 'dom-helpers/src/removeClass'
 
-var el, visible = false, currentProgress;
+let el, visible = false, currentProgress;
 
 function init() {
     createEl();
@@ -21,7 +21,7 @@ function beforeShow() {
     visible = true;
 
     applyProgress(0)
-    addCssClass(el, 'overlay--visible-step1');
+    addClass(el, 'overlay--visible-step1');
 }
 
 function beforeHide() {
@@ -29,7 +29,7 @@ function beforeHide() {
 }
 
 function afterHide() {
-    removeCssClass(el, 'overlay--visible-step1');
+    removeClass(el, 'overlay--visible-step1');
 }
 
 function applyProgress(p) {
@@ -45,17 +45,17 @@ function onClick(cb) {
     onClickCallbacks.push(cb);
 }
 
-module.exports = {
-    init: init,
-    beforeShow: beforeShow,
-    beforeHide: beforeHide,
-    afterHide: afterHide,
-    applyProgress: applyProgress,
-    isVisible: isVisible,
-    getProgress: function() {
+export default {
+    init,
+    beforeShow,
+    beforeHide,
+    afterHide,
+    applyProgress,
+    isVisible,
+    getProgress() {
         return currentProgress
     },
-    setZIndex: function(i) {
+    setZIndex(i) {
         addStyle(el, {
             zIndex: i
         })

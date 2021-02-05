@@ -1,4 +1,4 @@
-function validateAnimDurations(d) {
+export default function(d) {
     if (typeof d == 'undefined') {
         d = {};
     }
@@ -13,5 +13,3 @@ function validateAnimDurations(d) {
 
     return d;
 }
-
-module.exports = validateAnimDurations

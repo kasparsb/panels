@@ -1,4 +1,12 @@
-function validateAnimBezierCurve(d) {
+function isValidAnimBezierCurve(curve) {
+    if (typeof curve.show == 'undefined' && typeof curve.hide == 'undefined') {
+        return false;
+    }
+
+    return true;
+}
+
+export default function(d) {
     /**
      * AnimCurve ir definēta ar curve priekš show animācijas
      * un hide, priekš hide animācijas
@@ -24,13 +32,3 @@ function validateAnimBezierCurve(d) {
 
     return d;
 }
-
-function isValidAnimBezierCurve(curve) {
-    if (typeof curve.show == 'undefined' && typeof curve.hide == 'undefined') {
-        return false;
-    }
-
-    return true;
-}
-
-module.exports = validateAnimBezierCurve

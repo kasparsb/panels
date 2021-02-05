@@ -1,11 +1,11 @@
-function throttle(fn, threshhold, scope) {
+export default function(fn, threshhold, scope) {
     threshhold || (threshhold = 250);
-    var last, deferTimer;
-    
+    let last, deferTimer;
+
     return function () {
-        var context = scope || this;
-  
-        var now = +new Date, args = arguments;
+        let context = scope || this;
+
+        let now = +new Date, args = arguments;
         if (last && now < last + threshhold) {
             // hold on to it
             clearTimeout(deferTimer);
@@ -13,12 +13,10 @@ function throttle(fn, threshhold, scope) {
                 last = now;
                 fn.apply(context, args);
             }, threshhold);
-        } 
+        }
         else {
             last = now;
             fn.apply(context, args);
         }
     }
 }
-
-module.exports = throttle;

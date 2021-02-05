@@ -1,17 +1,18 @@
-var Stepper = require('stepper');
-var BodyScroll = require('./bodyScrollDisable');
-var Overlay = require('./overlay');
-var Panel = require('./panel');
-var fireCallbacks = require('./fireCallbacks');
-var propPushToArray = require('./propPushToArray');
+import re from 'dom-helpers/src/re';
+import Stepper from 'stepper';
+import BodyScroll from './bodyScrollDisable';
+import Overlay from './overlay';
+import Panel from './panel';
+import fireCallbacks from './fireCallbacks';
+import propPushToArray from './propPushToArray';
 
 // function getScrollbarWidth() {
 //   return window.innerWidth - document.documentElement.clientWidth;
 // }
 
-var Step, OverlayStep, panels = {}, 
-    needToShowOverlay = true, needToHideOverlay = true, 
-    openPanelsCount = 0, openPanelsStack = []
+let Step, OverlayStep, panels = {},
+    needToShowOverlay = true, needToHideOverlay = true,
+    openPanelsCount = 0, openPanelsStack = [],
     callbacks = {
         hide: {},
         show: {}
@@ -21,7 +22,7 @@ var Step, OverlayStep, panels = {},
  * Bezier curve for sliding animations
  * Begging is fast, ending is slow
  */
-var slidingAnimBezierCurve = {
+let slidingAnimBezierCurve = {
     show: [0.075, 0.82, 0.165, 1],
     hide: [0.6, 0.04, 0.98, 0.335]
 };
@@ -30,7 +31,7 @@ var slidingAnimBezierCurve = {
  * Bezier curve for fading animations
  * Begging is fast, ending is slow
  */
-var fadingAnimBezierCurve = {
+let fadingAnimBezierCurve = {
     show: [0.55, 0.085, 0.68, 0.53],
     hide: [0.25, 0.46, 0.45, 0.94]
 };
@@ -41,17 +42,19 @@ function init() {
     OverlayStep = new Stepper();
 }
 
-function registerPanel(name, $el, props) {
+function registerPanel(name, el, props) {
+    el = re(el);
+
     if (typeof panels[name] != 'undefined') {
         return
     }
 
-    panels[name] = createPanel(name, $el, props);
+    panels[name] = createPanel(name, el, props);
 }
 
-function createPanel(name, $el, props) {
-    var r = new Panel(name, $el, props);
-    
+function createPanel(name, el, props) {
+    let r = new Panel(name, el, props);
+
     setPanelEvents(r);
 
     return r;
@@ -62,9 +65,7 @@ function getPanel(name) {
 }
 
 function setPanelEvents(Panel) {
-    Panel.onClose(function(){
-        handlePanelHide(Panel)
-    })
+    Panel.onClose(() => handlePanelHide(Panel))
 }
 
 function setZIndex(zIndex, panel) {
@@ -85,7 +86,6 @@ function handlePanelShow(Panel, config) {
  * Panel hide event
  */
 function handlePanelHide(Panel, config) {
-
     if (!Panel.isOpen) {
         return;
     }
@@ -96,9 +96,7 @@ function handlePanelHide(Panel, config) {
 
     // Ja panelim ir custom close callback, tad tam padodam iekšejo close metodi
     if (typeof callbacks.hide[Panel.name] != 'undefined') {
-        fireCallbacks(callbacks.hide[Panel.name], [function(){
-            hidePanel(Panel, config)
-        }])
+        fireCallbacks(callbacks.hide[Panel.name], [ () => hidePanel(Panel, config) ])
     }
     else {
         hidePanel(Panel, config)
@@ -120,7 +118,7 @@ function panelBeforeShow(panel) {
     //if (openPanelsCount > 0)
 
     needToShowOverlay = !Overlay.isVisible();
-    
+
     if (needToShowOverlay) {
         Overlay.beforeShow();
         BodyScroll.disable();
@@ -131,7 +129,7 @@ function panelBeforeShow(panel) {
 
 function panelAfterShow(panel) {
     panel.afterShow()
-    
+
     // Panel show event
     panel.getProp('onShow', function(){})()
 
@@ -139,7 +137,7 @@ function panelAfterShow(panel) {
 }
 
 function panelBeforeHide(panel) {
-    
+
     panel.beforeHide();
 
     needToHideOverlay = Overlay.isVisible()
@@ -180,8 +178,8 @@ function showPanel(panel, config) {
     // Izpildām user uzstādīto before show eventu
     panel.getProp('onBeforeShow', function(){})();
 
-    var animDurations = panel.getProp('animDurations');
-    var showOverlay = panel.getProp('showOverlay', true);
+    let animDurations = panel.getProp('animDurations');
+    let showOverlay = panel.getProp('showOverlay', true);
 
     // Iepriekšējo paneli, ja tāds ir, disable
     if (openPanelsCount > 0) {
@@ -201,12 +199,12 @@ function showPanel(panel, config) {
             OverlayStep.run({
                 bezierCurve: panel.getProp('overlayAnimBezierCurve', fadingAnimBezierCurve).show,
                 duration: animDurations.overlay,
-                onStep: function(p){
+                onStep(p) {
                     Overlay.applyProgress(p)
                 }
             })
         }
-        
+
     }
 
     if (animDurations.panel <= 0) {
@@ -221,19 +219,17 @@ function showPanel(panel, config) {
         Step.run({
             bezierCurve: getPanelRevealAnimationBezierCurve(panel).show,
             duration: animDurations.panel,
-            onStep: function(p){
+            onStep(p){
 
                 applyProgressCb(
-                    panel, 
-                    p, 
-                    function(p){
-                        panel.applyProgress(p)
-                    },
+                    panel,
+                    p,
+                    p => panel.applyProgress(p),
                     BodyScroll.getEl()
                 )
 
-            }, 
-            onDone: function(){
+            },
+            onDone(){
                 panelAfterShow(panel)
             }
         })
@@ -246,10 +242,10 @@ function hidePanel(panel, config) {
     // Panel before hide event
     panel.getProp('onBeforeHide', function(){})();
 
-    var animDurations = panel.getProp('animDurations');
+    let animDurations = panel.getProp('animDurations');
 
-    var done = function() {
-        
+    let onDone = function() {
+
         if (OverlayStep.isRunning() || Step.isRunning()) {
             return;
         }
@@ -270,43 +266,41 @@ function hidePanel(panel, config) {
             OverlayStep.run({
                 bezierCurve: panel.getProp('overlayAnimBezierCurve', fadingAnimBezierCurve).hide,
                 duration: animDurations.overlay,
-                onStep: function(p){
+                onStep(p) {
                     if (Overlay.getProgress() >= (1-p)) {
                         Overlay.applyProgress(1-p)
                     }
                 },
-                onDone: done
+                onDone
             })
-        }        
+        }
     }
 
     if (animDurations.panel <= 0) {
         panel.applyProgress(0);
-        
-        done();
+
+        onDone();
     }
     else {
-        var applyProgressCb = createPanelApplyProgressCallback(panel);
+        let applyProgressCb = createPanelApplyProgressCallback(panel);
 
         Step.run({
             bezierCurve: getPanelRevealAnimationBezierCurve(panel).hide,
             duration: animDurations.panel,
-            onStep: function(p){
+            onStep(p){
                 // Padodam panel, progress, default applyProgress metodi, kura ir obligāti
                 // jāizsauc no custom applyProgress funkcijas
                 applyProgressCb(
                     panel,
                     1-p,
-                    function(p){
-                        panel.applyProgress(p)
-                    },
+                    p => panel.applyProgress(p),
                     BodyScroll.getEl()
                 )
-            }, 
-            onDone: done
+            },
+            onDone
         })
     }
-    
+
 }
 
 function hidePanelImediately(panel) {
@@ -319,16 +313,13 @@ function hidePanelImediately(panel) {
 function hideAll(){
     if (openPanelsCount > 0) {
 
-        var r = [];
-        for (var i = 0; i < openPanelsStack.length; i++) {
-            r.push(openPanelsStack[i]);
-        }
+        // All panels except last one hideImmediatelu without animations etc
+        openPanelsStack
+            .slice(0, openPanelsCount-1)
+            .forEach(panel => hidePanelImediately(panel))
 
-        for (var i = 0; i < r.length-1; i++) {
-            hidePanelImediately(r[i]);
-        }
-
-        hidePanel(r[r.length-1]);
+        // Last one close normaly with animations etc
+        hidePanel(openPanelsStack[openPanelsCount-1]);
     }
 }
 
@@ -352,33 +343,33 @@ function createPanelApplyProgressCallback(panel) {
 
 function getPanelRevealAnimationBezierCurve(panel) {
     switch (panel.getProp('revealType')) {
-        case 'fade': 
+        case 'fade':
             return panel.getProp('panelAnimBezierCurve', fadingAnimBezierCurve);
         default:
             return panel.getProp('panelAnimBezierCurve', slidingAnimBezierCurve);
     }
 }
 
-module.exports = {
-    init: init,
+export default {
+    init,
 
-    registerPanel: registerPanel,
-    getPanel: getPanel,
+    registerPanel,
+    getPanel,
+    hideAll,
 
-    showPanel: function(panelName, config) {
+    showPanel(panelName, config) {
         handlePanelShow(getPanel(panelName), config)
     },
-    hidePanel: function(panelName, props) {
+    hidePanel(panelName, props) {
         handlePanelHide(getPanel(panelName), props)
     },
-    resizePanel: function(panelName) {
+    resizePanel(panelName) {
         handlePanelResize(getPanel(panelName))
     },
-    isOpen: function(panelName) {
+    isOpen(panelName) {
         return getPanel(panelName).isOpen;
     },
 
-    hideAll: hideAll,
 
     /**
      * @todo Šis ir jāpārsauc par onCloseClick
@@ -388,7 +379,7 @@ module.exports = {
      *
      * Bet varbūt vispār šitādu lietu nevajag, lai liek event uz paneli pa tiešo
      */
-    onHide: function(panelName, cb) {
+    onHide(panelName, cb) {
         callbacks.hide = propPushToArray(callbacks.hide, panelName, cb)
     }
 }
