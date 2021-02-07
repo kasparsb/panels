@@ -12,9 +12,11 @@ export default {
     register: Manager.registerPanel,
     get: Manager.getPanel,
     show: Manager.showPanel,
-    resize: Manager.resizePanel,
     hide: Manager.hidePanel,
+    toggle: Manager.togglePanel,
     hideAll: Manager.hideAll,
+
+    resize: Manager.resizePanel,
     isOpen: Manager.isOpen,
 
     onHide: Manager.onHide

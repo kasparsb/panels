@@ -1,4 +1,8 @@
 import re from 'dom-helpers/src/re';
+import on from 'dom-helpers/src/event/on';
+import getWindowDimensions from 'dom-helpers/src/getWindowDimensions';
+import addStyle from 'dom-helpers/src/addStyle';
+import append from 'dom-helpers/src/append';
 import Stepper from 'stepper';
 import BodyScroll from './bodyScrollDisable';
 import Overlay from './overlay';
@@ -13,6 +17,7 @@ import propPushToArray from './propPushToArray';
 let Step, OverlayStep, panels = {},
     needToShowOverlay = true, needToHideOverlay = true,
     openPanelsCount = 0, openPanelsStack = [],
+    windowDimensions = {}, scrollHelper,
     callbacks = {
         hide: {},
         show: {}
@@ -40,6 +45,47 @@ let fadingAnimBezierCurve = {
 function init() {
     Step = new Stepper();
     OverlayStep = new Stepper();
+
+    // Neskrolējama cover panēl skroll palīgs, lai varēt ieskrolēt adrese joslu
+    scrollHelper = createScrollHelper();
+
+    windowDimensions = getWindowDimensions();
+
+    // Set window resize handler
+    let st = 0;
+    on(window, 'resize', function(){
+        clearTimeout(st);
+        st = setTimeout(handleResizeAll, 5);
+    })
+}
+
+function handleResizeAll() {
+    windowDimensions = getWindowDimensions();
+
+    forEachPanel(panel => panel.isOpen ? panel.resize() : '')
+}
+
+function createScrollHelper() {
+    let r = document.createElement('div');
+    addStyle(r, {
+        top: 0,
+        left: 0,
+        width: 0,//'5px',
+        height: 0,
+        //background: 'red',
+        position: 'absolute',
+        zIndex: -1
+    });
+    append('body', r);
+    return r;
+}
+
+function forEachPanel(cb) {
+    for (let name in panels) {
+        if (panels.hasOwnProperty(name)) {
+            cb(panels[name], name);
+        }
+    }
 }
 
 function registerPanel(name, el, props) {
@@ -54,6 +100,17 @@ function registerPanel(name, el, props) {
 
 function createPanel(name, el, props) {
     let r = new Panel(name, el, props);
+
+    /**
+     * Window dimensions nolasīs tika manager un vienu reizi pie window resize
+     */
+    r.getWindowDimensions = function(){
+        return windowDimensions
+    }
+
+    r.setScrollHelperHeight = function(height) {
+        addStyle(scrollHelper, {height: height+'px'});
+    }
 
     setPanelEvents(r);
 
@@ -363,8 +420,17 @@ export default {
     hidePanel(panelName, props) {
         handlePanelHide(getPanel(panelName), props)
     },
+    togglePanel(panelName, props) {
+        let panel = getPanel(panelName);
+        panel.isOpen ? handlePanelHide(panel) : handlePanelShow(panel)
+    },
     resizePanel(panelName) {
-        handlePanelResize(getPanel(panelName))
+        if (panelName) {
+            handlePanelResize(getPanel(panelName));
+        }
+        else {
+            handleResizeAll();
+        }
     },
     isOpen(panelName) {
         return getPanel(panelName).isOpen;

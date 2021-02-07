@@ -71,7 +71,8 @@
     }
 
     &__content {
-        position: absolute;
+        /** Šeit saturs tiek skrollēts, un te būs scrollbars. Tāpēc fixed, lai stāv uz vietas */
+        position: fixed;
         z-index: 90;
         top: 0;
 
@@ -80,6 +81,7 @@
          * Te vajag, lai ir &__content-inner elements
          */
         overflow: hidden;
+        box-sizing: border-box;
     }
 
     &__close {
