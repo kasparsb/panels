@@ -39,18 +39,6 @@ function panel(name, el, props) {
      */
     this.props2 = undefined;
 
-    /**
-     * Paneļa platums. Šis tiek ņemts no props.width
-     * Ar šo mainīgo width tiek iekešots un tiek ielasīts
-     * tikai vienu reizi beforeShow eventā
-     */
-    this.panelDimensions = { width: 0, height: 0 }
-    this.windowDimensions = { width: 0, height: 0 }
-
-    // Tiek izmantots, lai korekti nopozicionētu content elementu
-    this.headerDimensions = { width: 0, height: 0 }
-    this.footerDimensions = { width: 0, height: 0 }
-
     // Šie tiek definēti beforeShow
     this.align;
     this.revealFrom;
@@ -63,7 +51,6 @@ function panel(name, el, props) {
     this.lastScrollTop = 0;
 
     this.el = el;
-
 
     /**
      * Animējamie elementi
@@ -186,12 +173,13 @@ panel.prototype = {
 
     applyProgress(progress) {
         if (this.revealType == 'slide') {
+
             this.setXYOffset(
                 calcPanelXYOffsetByProgress(
                     this.align,
                     this.revealFrom,
-                    this.panelDimensions,
-                    this.windowDimensions,
+                    this.d.panel,
+                    this.d.window,
                     progress
                 )
             )

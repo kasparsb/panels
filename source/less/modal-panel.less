@@ -18,7 +18,8 @@
     &__bg,
     &__header,
     &__footer {
-        left: @leftPositionForHidden;
+        pointer-events: none;
+        visibility: hidden;
     }
 
     /**
@@ -30,8 +31,6 @@
     display: block;
     z-index: @modalPanelZIndex;
     overflow: hidden;
-
-    //&:extend(.modal-panel-remove-tap-highlite);
 
     /**
      * Paneļa background, kurš ir izstiepts pa visu ekrāna augstumu
@@ -96,7 +95,8 @@
     &--visible &__bg,
     &--visible &__footer,
     &--visible &__header {
-        left: 0;
+        pointer-events: auto;
+        visibility: visible;
     }
 
     /** Animācija ir beigusies, liekam lai overflow ir scrolējam */
