@@ -12,7 +12,7 @@ import calcAlignXY from './calcAlignXY';
 import panelGetProp from './panelGetProp';
 import click from 'dom-helpers/src/event/click';
 import target from 'dom-helpers/src/event/target';
-import parents from 'dom-helpers/src/parents';
+import parent from 'dom-helpers/src/parent';
 import getElementOuterDimensions from 'dom-helpers/src/getOuterDimensions';
 //import isIos from './isIos';
 
@@ -91,7 +91,7 @@ panel.prototype = {
                 }
             }
             // Is close button element
-            else if (parents(el, '.modal-panel__close', '.modal-panel')) {
+            else if (parent(el, '.modal-panel__close', '.modal-panel')) {
                 /**
                  * Reaģējam uz panelī definēto close pogu
                  * closeCb nāk no panelsManager, kura šādā
@@ -225,11 +225,9 @@ panel.prototype = {
         return {
             position: 'fixed',
 
-            //top: (this.align.y + this.d.header.height)+'px',
             top: this.align.y+'px',
             paddingTop: this.d.header.height+'px',
             paddingBottom: this.d.footer.height+'px',
-            //height: this.d.panel.height+'px',
             height: '100%',
 
             overflow: 'hidden'
