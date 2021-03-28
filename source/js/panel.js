@@ -14,7 +14,8 @@ import click from 'dom-helpers/src/event/click';
 import target from 'dom-helpers/src/event/target';
 import parent from 'dom-helpers/src/parent';
 import getElementOuterDimensions from 'dom-helpers/src/getOuterDimensions';
-//import isIos from './isIos';
+import isIos from './isIos';
+import isAndroid from './isAndroid';
 
 let defaultAlign = 'center center';
 let defaultWidth = 320;
@@ -283,12 +284,11 @@ panel.prototype = {
          * elements ir absolute pozicionēts tāpēc neko neietekmē, kā tikai ļauj skrollēt
          * kas savukārt dod iespēju pārlūkprogrammai parādīt/noslēpt adreses joslu
          */
-        // if (isIos) {
-        //     this.setScrollHelperHeight(this.d.window.height * 1.4)
-        // }
-        // else {
-        //     this.setScrollHelperHeight(10)
-        // }
+        if (this.isScrollHelper) {
+            if (isIos || isAndroid) {
+                this.setScrollHelperHeight(this.d.window.height * 1.4)
+            }
+        }
 
         /**
          * Mobile safari: kad ir ieskrolēts uz adrese joslas ir samazinājusies un
@@ -408,6 +408,9 @@ panel.prototype = {
         this.isOpen = true;
 
         this.readDimensions();
+
+        this.isScrollHelper = this.getProp('addScrollHelper', false, [this.d.window]);
+
         this.setPositionAndSize();
 
 
@@ -506,6 +509,9 @@ panel.prototype = {
         this.hideInProgress = false;
 
         this.isOpen = false;
+
+        // Vienmēr uzliekam 0, ja arī tas nemaz nebija ieslēgts
+        this.setScrollHelperHeight(0)
     },
 
     resize() {

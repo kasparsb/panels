@@ -29,7 +29,7 @@ let Step, OverlayStep, panels = {},
  */
 let slidingAnimBezierCurve = {
     show: [0.075, 0.82, 0.165, 1],
-    hide: [0.6, 0.04, 0.98, 0.335]
+    hide: [0.075, 0.82, 0.165, 1]
 };
 
 /**
@@ -70,9 +70,8 @@ function createScrollHelper() {
     addStyle(r, {
         top: 0,
         left: 0,
-        width: 0,//'5px',
+        width: '1px',
         height: 0,
-        //background: 'red',
         position: 'absolute',
         zIndex: -1
     });
@@ -277,7 +276,6 @@ function showPanel(panel, config) {
             bezierCurve: getPanelRevealAnimationBezierCurve(panel).show,
             duration: animDurations.panel,
             onStep(p){
-
                 applyProgressCb(
                     panel,
                     p,
