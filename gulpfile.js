@@ -33,9 +33,8 @@ function getBrowserify(entry) {
         entries: [entry],
         // These params are for watchify
         cache: {},
-        packageCache: {}
-
-        //,standalone: '{enter_namespace}'
+        packageCache: {},
+        standalone: 'webit.panels'
     })
 }
 
