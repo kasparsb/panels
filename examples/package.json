@@ -1,0 +1,21 @@
+{
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-react": "^7.6.3",
+    "@babel/core": "^7.6.4",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
+    "gulp": "^3.9.1",
+    "vinyl-source-stream": "^2.0.0",
+    "vinyl-buffer": "^1.0.1",
+    "watchify": "^3.11.1",
+    "gulp-watch": "^5.0.1",
+    "gulp-uglify": "^3.0.2"
+  },
+  "dependencies": {
+    "dom-helpers": "git+https://github.com/kasparsb/dom-helpers.git",
+    "infinityswipe": "git+https://github.com/kasparsb/infinityswipe.git"
+  }
+}

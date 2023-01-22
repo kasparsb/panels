@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
     <title>Basic</title>
-    
+
     <style>
     html, body {
         padding: 0;
         margin: 0;
     }
-    
+
 
     button {
         margin-top: 14px;
@@ -23,7 +23,7 @@
         color: #000;
         border-radius: 4px;
         font-weight: bold;
-        
+
         -webkit-tap-highlight-color: rgba(0,0,0,0);
     }
     .app-w {
@@ -64,7 +64,7 @@
     <div class="controls">
         <button type="button" name="open-panel1">Open panel 1</button>
     </div>
-    
+
     <div class="log"></div>
 
     <div class="app-w">
@@ -87,20 +87,22 @@
     </div>
 
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        
+
     <script>
         function init($){
 
-            webit.panels.init();
+            console.log(webit);
 
-            webit.panels.register('basic1', $('.panel1'), {
+            webit.panels.default.init();
+
+            webit.panels.default.register('basic1', $('.panel1').get(0), {
                 align: 'center center',
                 revealType: 'fade',
                 animDurations: {
                     panel: 200,
                     overlay: 200
                 },
-                
+
                 width: function(viewportDimensions){
                     //return Math.min(viewportDimensions.width, 200)
                     return viewportDimensions.width/2
@@ -114,8 +116,8 @@
 
             $(document).on('click', '[name=open-panel1]', function(ev){
                 ev.preventDefault();
-                
-                webit.panels.show('basic1', {
+
+                webit.panels.default.show('basic1', {
                     //showOverlay: false
                 });
             })
@@ -130,7 +132,7 @@
             s.setAttribute('rel', 'stylesheet');
             s.setAttribute('href', '../build/panels.min.css?v='+(new Date()).getTime());
 
-            
+
             var s = d.createElement('script');
             d.getElementsByTagName('head')[0].appendChild(s);
             s.src = '../build/panels.min.js?v='+(new Date()).getTime();

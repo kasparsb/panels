@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0">
-    <title>Basic</title>
+    <title>Grow</title>
     
     <style>
     html, body {
@@ -74,24 +74,29 @@
         </header>
 
         <section class="modal-panel__content">
-
-            <div>
-                <div class="r">1</div>
-                <div class="r">2</div>
-                <div class="r">3</div>
-                <div class="r">4</div>
-                <div class="r">5</div>
-                <div class="r">6</div>
-                <div class="r">7</div>
-                <div class="r">1</div>
-                <div class="r">2</div>
-                <div class="r">3</div>
-                <div class="r">4</div>
-                <div class="r">5</div>
-                <div class="r">6</div>
-                <div class="r">7</div>
+            <div class="modal-panel__content-inner">
+                <div>
+                    <div class="r">1</div>
+                    <div class="r">2</div>
+                    <div class="r">3</div>
+                    <div class="r">4</div>
+                    <div class="r">5</div>
+                    <div class="r">6</div>
+                    <div class="r">7</div>
+                    <div class="r">1</div>
+                    <div class="r">2</div>
+                    <div class="r">3</div>
+                    <div class="r">4</div>
+                    <div class="r">5</div>
+                    <div class="r">6</div>
+                    <div class="r">7</div>
+                </div>
             </div>
         </section>
+
+        <footer class="modal-panel__footer">
+            Panel footer
+        </footer>
     </div>
 
     <div class="modal-panel panel2">
@@ -147,23 +152,63 @@
             $('.log').append(t)
         }
 
+        function resizePanel() {
+            webit.panels.resize('basic1');
+        }
+
         function init($){
 
             webit.panels.init();
 
-            webit.panels.register('basic1', $('.panel1'), {
-                align: 'left',
-                revealFrom: 'bottom',
+            webit.panels.register('basic1', $('.panel1').get(0), {
+                //align: 'center center',
+                align: function(viewportDimensions){
+                    if (viewportDimensions.width > 400) {
+                        return 'center top'
+                    }
+                    else {
+                        return 'center top'
+                    }
+                },
+                revealFrom: function(viewportDimensions){
+                    if (viewportDimensions.width > 400) {
+                        return 'right'
+                    }
+                    else {
+                        return 'bottom'
+                    }
+                },
                 revealType: 'slide',
+                //revealType: 'fade',
 
                 animDurations: {
-                    panel: 400,
+                    panel: 2000,
                     overlay: 400
                 },
                 
+                restoreScrollTop: function(){
+                    return true
+                },
+
                 width: function(viewportDimensions){
                     //return Math.min(viewportDimensions.width, 200)
-                    return viewportDimensions.width/2
+                    return Math.min(viewportDimensions.width, 700)
+                },
+
+                height: function(viewportDimensions) {
+                    return Math.min(viewportDimensions.height, 800)
+                },
+
+                panelAnimBezierCurve: {
+                    show: [1,1,1,1]
+                    //hide: [0.075, 0.82, 0.165, 1]
+                },
+
+                // onShow: function() {
+                //     console.log('showed')
+                // },
+                onHide: function() {
+                    console.log('hidden')
                 }
             })
 
