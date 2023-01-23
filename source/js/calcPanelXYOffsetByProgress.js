@@ -13,26 +13,26 @@ export default function(align, revealFrom, panelDimensions, viewportDimensions, 
          * beigu pozīcijā šai vērtībai (viewportDimensions.width - align.x) jābūt 0
          */
         return {
-            x: (viewportDimensions.width - align.x) - ((viewportDimensions.width - align.x)*progress),
+            x: (viewportDimensions.width - align.x.value) - ((viewportDimensions.width - align.x.value)*progress),
             y: 0
         }
     }
     else if (revealFrom == 'left') {
         return {
-            x: -((align.x + panelDimensions.width) - ((align.x + panelDimensions.width)*progress)),
+            x: -((align.x.value + panelDimensions.width) - ((align.x.value + panelDimensions.width)*progress)),
             y: 0
         }
     }
     else if (revealFrom == 'top') {
         return {
             x: 0,
-            y: -((align.y + panelDimensions.height) - ((align.y + panelDimensions.height)*progress))
+            y: -((align.y.value + panelDimensions.height) - ((align.y.value + panelDimensions.height)*progress))
         }
     }
     else if (revealFrom == 'bottom') {
         return {
             x: 0,
-            y: (viewportDimensions.height - align.y) - ((viewportDimensions.height - align.y)*progress)
+            y: (viewportDimensions.height - align.y.value) - ((viewportDimensions.height - align.y.value)*progress)
         }
     }
 }

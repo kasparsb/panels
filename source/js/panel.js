@@ -1,4 +1,4 @@
-import Swipe from 'swipe';
+//import Swipe from 'swipe';
 import q from 'dom-helpers/src/q';
 import addClass from 'dom-helpers/src/addClass';
 import hasClass from 'dom-helpers/src/hasClass';
@@ -194,7 +194,7 @@ panel.prototype = {
         return {
             position: 'fixed',
 
-            top: (this.align.y + this.d.header.height)+'px',
+            top: (this.align.y.value + this.d.header.height)+'px',
             height: (this.d.panel.height - this.d.header.height - this.d.footer.height)+'px',
 
             overflow: 'auto',
@@ -205,7 +205,7 @@ panel.prototype = {
         return {
             position: 'fixed',
 
-            top: (this.align.y + this.d.header.height)+'px',
+            top: (this.align.y.value + this.d.header.height)+'px',
             height: (this.d.panel.height - this.d.header.height - this.d.footer.height)+'px',
 
             overflow: 'hidden'
@@ -215,7 +215,7 @@ panel.prototype = {
         return {
             position: 'absolute',
 
-            top: (this.align.y + this.d.header.height)+'px',
+            top: (this.align.y.value + this.d.header.height)+'px',
             minHeight: (this.d.panel.height - this.d.header.height)+'px',
             paddingBottom: this.d.footer.height+'px',
 
@@ -226,7 +226,7 @@ panel.prototype = {
         return {
             position: 'fixed',
 
-            top: this.align.y+'px',
+            top: this.align.y.value+'px',
             paddingTop: this.d.header.height+'px',
             paddingBottom: this.d.footer.height+'px',
             height: '100%',
@@ -271,25 +271,20 @@ panel.prototype = {
         this.d.isFullWidth = this.d.panel.width >= this.d.window.width,
         this.d.isCover = this.d.isFullHeight && this.d.isFullWidth;
 
-        this.align = calcAlignXY(this.getProp('align', defaultAlign, [this.d.window]), this.d.panel, this.d.window);
+        this.align = calcAlignXY(
+            this.getProp(
+                'align',
+                defaultAlign,
+                [this.d.window]
+            ),
+            this.d.panel,
+            this.d.window
+        );
         this.revealFrom = this.getProp('revealFrom', 'left', [this.d.window]);
         this.revealType = this.getProp('revealType', 'none', [this.d.window]);
     },
 
     setPositionAndSize(isResize) {
-
-        /**
-         * ši palīdz uz ios un android ieskrolēt adreses joslu, ja panelis ir bez skrolēšanas
-         * Jāuzliek lielāks augstums, kā ekrāna augstums.
-         * elements ir absolute pozicionēts tāpēc neko neietekmē, kā tikai ļauj skrollēt
-         * kas savukārt dod iespēju pārlūkprogrammai parādīt/noslēpt adreses joslu
-         */
-        if (this.isScrollHelper) {
-            if (isIos || isAndroid) {
-                this.setScrollHelperHeight(this.d.window.height * 1.4)
-            }
-        }
-
         /**
          * Mobile safari: kad ir ieskrolēts uz adrese joslas ir samazinājusies un
          * bottom navigācijas pogas ir pazudušas:
@@ -307,8 +302,6 @@ panel.prototype = {
         }
 
 
-
-
         /**
          * Ja platums ir tāds pats kā viewport platums, tad ir
          * jāliek 100% lai gadījumā, kad parādās vertical scroll bar,
@@ -316,12 +309,12 @@ panel.prototype = {
          * scrollbar platumu un atņemt to no platuma
          */
         this.setElementsStyle('bg', 'header', 'content', 'footer', {
-            left: this.align.x+'px',
+            left: this.align.x.value+'px',
             width: this.d.isFullWidth ? '100%' : this.d.panel.width+'px'
         });
 
         this.setElementsStyle('bg', 'header', {
-            top: this.align.y+'px'
+            top: this.align.y.value+'px'
         });
 
         if (this.d.isFullHeight) {
@@ -331,7 +324,7 @@ panel.prototype = {
         }
         else {
             this.setElementsStyle('footer', {
-                top: (this.align.y + this.d.panel.height - this.d.footer.height)+'px'
+                top: (this.align.y.value + this.d.panel.height - this.d.footer.height)+'px'
             });
         }
 
@@ -355,6 +348,7 @@ panel.prototype = {
          *     contentIsNotScrollable
          */
         let isContentScrollable = this.getProp('contentScrollable', false, [this.d.window])
+
         if (this.d.isCover) {
             if (isContentScrollable) {
                 this.setElementsStyle('content', this.contentIsScrollable())
@@ -458,6 +452,18 @@ panel.prototype = {
          * ir relatīvi pret parent nevis document
          */
         addStyle(this.el, {transform: ''});
+
+        /**
+         * ši palīdz uz ios un android ieskrolēt adreses joslu, ja panelis ir bez skrolēšanas
+         * Jāuzliek lielāks augstums, kā ekrāna augstums.
+         * elements ir absolute pozicionēts tāpēc neko neietekmē, kā tikai ļauj skrollēt
+         * kas savukārt dod iespēju pārlūkprogrammai parādīt/noslēpt adreses joslu
+         */
+        if (this.isScrollHelper) {
+            if (isIos || isAndroid) {
+                this.setScrollHelperHeight(this.d.window.height * 1.4)
+            }
+        }
     },
 
     beforeHide() {
