@@ -1,5 +1,6 @@
 import addStyle from 'dom-helpers/src/addStyle';
 import addClass from 'dom-helpers/src/addClass';
+import append from 'dom-helpers/src/append';
 import removeClass from 'dom-helpers/src/removeClass'
 
 let el, visible = false, currentProgress;
@@ -14,7 +15,7 @@ function init() {
 function createEl() {
     el = document.createElement('div');
     el.className = 'overlay';
-    document.getElementsByTagName('body')[0].appendChild(el)
+    append('body', el)
 }
 
 function beforeShow() {

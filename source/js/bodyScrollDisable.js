@@ -6,7 +6,7 @@ import addStyle from 'dom-helpers/src/addStyle';
 import getStyle from 'dom-helpers/src/getStyle';
 import q from 'dom-helpers/src/q';
 
-var app, appContainer, scrollTop, prevAppWPosition = '';
+let app, appContainer, scrollTop, prevAppWPosition = '', isDefined=false;
 
 function init() {
 
@@ -16,6 +16,11 @@ function init() {
 
     app = q('.app');
     appContainer = q('.app-w');
+
+    // Ja ir abi app un appContainer, tad uzskatam, ka ir defined
+    if (app && appContainer) {
+        isDefined = true;
+    }
 }
 
 function disable() {
@@ -63,9 +68,31 @@ function enable() {
 
 export default {
     init,
-    disable,
-    enable,
+
+    disable() {
+        if (!isDefined) {
+            return
+        }
+
+        disable();
+    },
+    enable() {
+        if (!isDefined) {
+            return
+        }
+
+        enable();
+    },
     getEl() {
+        if (!isDefined) {
+            return {
+                setStyle() {
+
+                },
+                el: null
+            }
+        }
+
         return {
             setStyle(style){
                 addStyle(appContainer, style)
@@ -74,6 +101,10 @@ export default {
         }
     },
     setZIndex(i) {
+        if (!isDefined) {
+            return;
+        }
+
         addStyle(appContainer, {
             zIndex: i
         })
