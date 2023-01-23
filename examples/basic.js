@@ -9,7 +9,7 @@ import setWindowScrollTop from 'dom-helpers/src/setWindowScrollTop';
 import q from 'dom-helpers/src/q';
 import jsx from 'dom-helpers/src/jsx';
 
-Panels.init();
+//Panels.init();
 
 function createRow(count) {
     let r = [];
@@ -20,7 +20,6 @@ function createRow(count) {
 }
 
 function createPanel(name, size, isScroll, rowsCount) {
-
     let el = (
         <div class="modal-panel">
             <header class="modal-panel__header">{name}</header>
@@ -65,9 +64,12 @@ function createPanel(name, size, isScroll, rowsCount) {
 }
 
 let w = 1;
+let logEl = q('.log');
 function reportWindowSize() {
-    let {width, height} = getWindowDimensions();
-    q('.log').innerHTML = (w++)+'resize: '+width+' x '+height;
+    if (logEl) {
+        let {width, height} = getWindowDimensions();
+        logEl.innerHTML = (w++)+'resize: '+width+' x '+height;
+    }
 }
 
 let st = 0;
@@ -102,3 +104,36 @@ clickp('.controls button', (ev, el) => {
 
     toggleClass(el, 'open', Panels.isOpen(name));
 });
+
+clickp('[name=openminimal]', () => {
+    let el = (
+        <div class="modal-panel">
+            <section class="modal-panel__content">
+                Minimal, Sint veniam commodo magna in proident eu in consequat.
+            </section>
+        </div>
+    )
+
+    append('body', el);
+
+    Panels.register('minimal', el, {
+        align(viewportDimensions) {
+            if (viewportDimensions.width > 600) {
+                return 'right:20 top:20';
+
+            }
+            else {
+                return 'left:0 top:0';
+            }
+        },
+        //align: 'center center',
+        width(viewportDimensions) {
+            return viewportDimensions.width * 0.7;
+        },
+        height(viewportDimensions) {
+            return viewportDimensions.height * 0.7;
+        }
+    });
+
+    Panels.show('minimal');
+})

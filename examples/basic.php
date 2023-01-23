@@ -167,12 +167,11 @@
             <div class="r">12</div>
             <div class="r">13</div>
             <div class="r">14</div>
+            <script>
+                document.write(navigator.userAgent);
+            </script>
         </div>
     </div>
-
-    <script>
-        document.write(navigator.userAgent);
-    </script>
 
     <script type="text/javascript" src="./build/basic.min.js?rand=<?php echo time() ?>"></script>
 </body>
