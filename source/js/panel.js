@@ -392,10 +392,40 @@ panel.prototype = {
         })
     },
 
+    /**
+     * Uzstāda panel zIndex
+     * atkarībā no padotā zIndex vajag uzlikt pielāgotu
+     * zIndex uz header, footer, bg un content
+     */
     setZIndex(i) {
+        // Panel
         addStyle(this.el, {
             zIndex: i
         })
+
+        // Background ir viss zemāk
+        if (this.elements.bg) {
+            addStyle(this.elements.bg, {
+                zIndex: i
+            })
+        }
+        // Content ir virs bg un zem header,footer
+        if (this.elements.content) {
+            addStyle(this.elements.content, {
+                zIndex: i+1
+            })
+        }
+        // Header un footer ir virs visiem iepriekšējiem
+        if (this.elements.header) {
+            addStyle(this.elements.header, {
+                zIndex: i+2
+            })
+        }
+        if (this.elements.footer) {
+            addStyle(this.elements.footer, {
+                zIndex: i+2
+            })
+        }
     },
 
     beforeShow() {

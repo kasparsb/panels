@@ -29,7 +29,6 @@
     width: 100%;
     height: 100%;
     display: block;
-    z-index: @modalPanelZIndex;
     overflow: hidden;
 
     /**
@@ -51,8 +50,6 @@
         /** height: 120%; */
 
         background-color: #fff;
-
-        z-index: 10;
     }
 
     &__header {
@@ -66,13 +63,11 @@
     &__footer {
         /** Fixed: iOS gadījumā, lai stāv */
         position: fixed;
-        z-index: 100;
     }
 
     &__content {
         /** Šeit saturs tiek skrollēts, un te būs scrollbars. Tāpēc fixed, lai stāv uz vietas */
         position: fixed;
-        z-index: 90;
         top: 0;
 
         /**
