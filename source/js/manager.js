@@ -1,3 +1,4 @@
+import q from 'dom-helpers/src/q';
 import re from 'dom-helpers/src/re';
 import on from 'dom-helpers/src/event/on';
 import getWindowDimensions from 'dom-helpers/src/getWindowDimensions';
@@ -9,10 +10,6 @@ import Overlay from './overlay';
 import Panel from './panel';
 import fireCallbacks from './fireCallbacks';
 import propPushToArray from './propPushToArray';
-
-// function getScrollbarWidth() {
-//   return window.innerWidth - document.documentElement.clientWidth;
-// }
 
 let Step, OverlayStep, panels = {},
     needToShowOverlay = true, needToHideOverlay = true,

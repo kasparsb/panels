@@ -32,7 +32,5 @@ export default function(d) {
         }
     }
 
-    console.log(r);
-
     return r;
 }

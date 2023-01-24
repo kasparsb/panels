@@ -1,14 +1,20 @@
 import getWindowScrollTop from 'dom-helpers/src/getWindowScrollTop';
 import setWindowScrollTop from 'dom-helpers/src/setWindowScrollTop';
+import getWindowDimensions from 'dom-helpers/src/getWindowDimensions';
+import getOuterDimensions from 'dom-helpers/src/getOuterDimensions';
+import getScrollbarWidth from './getScrollbarWidth';
 import addClass from 'dom-helpers/src/addClass';
 import removeClass from 'dom-helpers/src/removeClass';
 import addStyle from 'dom-helpers/src/addStyle';
 import getStyle from 'dom-helpers/src/getStyle';
 import q from 'dom-helpers/src/q';
 
-let app, appContainer, scrollTop, prevAppWPosition = '', isDefined=false;
+let app, appContainer, scrollTop, prevAppWPosition = '', isDefined=false, scrollBarWidth;
 
 function init() {
+
+    // Read scroll bar width once
+    scrollBarWidth = getScrollbarWidth();
 
     /**
      * @todo Uztaisīt, lai app un app-w ir konfigurējami
@@ -66,6 +72,21 @@ function enable() {
     setWindowScrollTop(scrollTop);
 }
 
+/**
+ * Vai body ir scrollējams
+ *
+ * Vai .app ir lielāks par windowHeight
+ */
+function isScrollBarVisible() {
+    return getOuterDimensions(app).height > getWindowDimensions().height;
+}
+
+function compensateScrollBarWidth(width) {
+    addStyle(app, {
+        marginRight:(width ? (width+'px') : '')
+    })
+}
+
 export default {
     init,
 
@@ -74,12 +95,18 @@ export default {
             return
         }
 
+        if (isScrollBarVisible()) {
+            compensateScrollBarWidth(scrollBarWidth);
+        }
+
         disable();
     },
     enable() {
         if (!isDefined) {
             return
         }
+
+        compensateScrollBarWidth(0);
 
         enable();
     },
