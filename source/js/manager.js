@@ -237,6 +237,12 @@ function showPanel(panel, config) {
     let animDurations = panel.getProp('animDurations');
     let showOverlay = panel.getProp('showOverlay', true);
 
+    // Ja nav uzstādīts revealType, tad novācam animationDuration
+    if (!panel.getProp('revealType')) {
+        animDurations.overlay = 0;
+        animDurations.panel = 0;
+    }
+
     // Iepriekšējo paneli, ja tāds ir, disable
     if (openPanelsCount > 0) {
         openPanelsStack[openPanelsStack.length-1].disable();
@@ -298,6 +304,12 @@ function hidePanel(panel, config) {
     panel.getProp('onBeforeHide', function(){})();
 
     let animDurations = panel.getProp('animDurations');
+
+    // Ja nav uzstādīts revealType, tad novācam animationDuration
+    if (!panel.getProp('revealType')) {
+        animDurations.overlay = 0;
+        animDurations.panel = 0;
+    }
 
     let onDone = function() {
 

@@ -3,12 +3,18 @@ export default function(d) {
         d = {};
     }
 
+    /**
+     * Pēc noklusējuma liekam base duration vērtības
+     * tas ir gadījumā, ja ir uzlikts animācijas veids,
+     * lai tā animācija arī nostrādā
+     * Ja ir 0 vērtība, tad animācija nestrādās
+     */
     if (typeof d.overlay == 'undefined') {
-        d.overlay = 0;
+        d.overlay = 100;
     }
 
     if (typeof d.panel == 'undefined') {
-        d.panel = 0;
+        d.panel = 80;
     }
 
     return d;
