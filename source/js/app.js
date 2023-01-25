@@ -49,5 +49,8 @@ export default {
     },
     onHide() {
         return checkInitBeforeCall(Manager.onHide, [...arguments])
+    },
+    onScrollBarCompensation() {
+        return checkInitBeforeCall(Manager.onScrollBarCompensation, [...arguments])
     }
 }

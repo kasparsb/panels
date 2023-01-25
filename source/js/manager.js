@@ -17,7 +17,9 @@ let Step, OverlayStep, panels = {},
     windowDimensions = {}, scrollHelper,
     callbacks = {
         hide: {},
-        show: {}
+        show: {},
+        // Nav piesaistes panelName
+        scrollBarCompensation: []
     };
 
 /**
@@ -54,6 +56,9 @@ function init() {
         clearTimeout(st);
         st = setTimeout(handleResizeAll, 5);
     })
+
+    // Listen for scrollbar compensation
+    BodyScroll.onScrollBarCompensation(scrollBarWidth => fireCallbacks(callbacks.scrollBarCompensation, [ scrollBarWidth ]))
 }
 
 function handleResizeAll() {
@@ -454,5 +459,18 @@ export default {
      */
     onHide(panelName, cb) {
         callbacks.hide = propPushToArray(callbacks.hide, panelName, cb)
+    },
+
+    /**
+     * Kad atverot panel tiek novākts scrollbar no visas lapas,
+     * tad tiks izsaukts šis callback un padots scrollbar width
+     *
+     * Šis darbojas neatkarīgi no panel. Jebkuru panel atverot, ja tike
+     * novākts scroll bar, tad šis tiks izsaukts.
+     *
+     * App uzstāda tikai vienu šādu listener
+     */
+    onScrollBarCompensation(cb) {
+        callbacks.scrollBarCompensation.push(cb);
     }
 }

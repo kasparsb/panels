@@ -9,7 +9,8 @@ import addStyle from 'dom-helpers/src/addStyle';
 import getStyle from 'dom-helpers/src/getStyle';
 import q from 'dom-helpers/src/q';
 
-let app, appContainer, scrollTop, prevAppWPosition = '', isDefined=false, scrollBarWidth;
+let app, appContainer, scrollTop, scrollBarWidth, scrollBarCompensationCb;
+let prevAppWPosition = '', isDefined=false;
 
 function init() {
 
@@ -96,6 +97,7 @@ export default {
         }
 
         if (isScrollBarVisible()) {
+            scrollBarCompensationCb(scrollBarWidth);
             compensateScrollBarWidth(scrollBarWidth);
         }
 
@@ -106,6 +108,7 @@ export default {
             return
         }
 
+        scrollBarCompensationCb(0);
         compensateScrollBarWidth(0);
 
         enable();
@@ -135,5 +138,8 @@ export default {
         addStyle(appContainer, {
             zIndex: i
         })
+    },
+    onScrollBarCompensation(cb) {
+        scrollBarCompensationCb = cb
     }
 }
